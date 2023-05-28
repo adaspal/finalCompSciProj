@@ -7,7 +7,8 @@ def validateCredentials(username, password):
         csv_reader = csv.reader(file)
         for row in csv_reader:
             if row[0] == username:
-                return True
+                if row[1] == password:
+                    return True   
         return False
 
 
