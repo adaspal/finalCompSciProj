@@ -51,12 +51,6 @@ def createAccountPage():
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
     createAccountButton.pack(pady=25)
 
-    loginButton = Button(frameCreateAccount, text="Log in", command=loginPage)
-    loginButton.pack()
-
-    # createAccountButton = Button(frameCreateAccount, text="Don't Have an Account? Click Here", fg='blue', command=createAccount)
-    # createAccountButton.pack(pady=20)
-
 def validateNewAccount(createdUsername, createdPassword):
     #Checks to ensure that characters are used in the username and password
     if createdUsername.strip() == "" or createdPassword.strip() == "":
@@ -66,7 +60,7 @@ def validateNewAccount(createdUsername, createdPassword):
     with open("doctorCredentials.csv", 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            if row[0] == createdUsername and row[1] == createdPassword:
+            if row[0] == createdUsername:
                 return False
             
     #If it passes both validations:
@@ -74,12 +68,16 @@ def validateNewAccount(createdUsername, createdPassword):
 
 def addNewAccount(createdUsername, createdPassword):
     if validateNewAccount(createdUsername, createdPassword): #if the function returned true, meaning it passed validation
+        #clearing screen
+        for widget in frameMain.winfo_children():
+            widget.destroy()
         #append to csv goes here
-        errorLabel = Label(frameMain, text="✓ -Account created successfully! Please log in.", font=("Helvetica", 16), fg="green", bg="#C7F6B6")
-        errorLabel.pack(pady=50)
+        #display homescreen
+        homePage()
     else:
-        errorLabel = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel.pack(pady=50)
+        errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
+        errorLabel2.pack(pady=50)
+        print("error")
 
 # Log in / create account functions go here ###
 def validateCredentials(username, password):
