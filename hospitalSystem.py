@@ -1,7 +1,9 @@
 import csv
+from csv import writer
 from tkinter import *
 
 def loginPage():
+    '''Creates log in page'''
     for widget in frameMain.winfo_children():
         widget.destroy()
     frameLogin = Frame(frameMain)
@@ -20,7 +22,7 @@ def loginPage():
     entryPassword = Entry(frameLogin, show="*")  # Mask password with asterisks
     entryPassword.pack()
 
-    loginButton = Button(frameLogin, text="Sign in", command=lambda: loginValidation(entryUsername.get(), entryPassword.get()))
+    loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
     loginButton.pack(pady=25)
 
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
@@ -29,6 +31,7 @@ def loginPage():
     # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
 
 def createAccountPage():
+    ''' Creates create account page'''
     for widget in frameMain.winfo_children():
         widget.destroy()
     frameCreateAccount = Frame(frameMain)
@@ -51,7 +54,17 @@ def createAccountPage():
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
     createAccountButton.pack(pady=25)
 
+def homePage():
+    ''' Creates home page'''
+    # Create home page
+    frameHome = Frame(frameMain, bg="red")
+    frameHome.pack(fill="both", expand=True)
+
+    homeLabel = Label(frameHome, text=f"WELCOME", bg="red")
+    homeLabel.pack()
+
 def validateNewAccount(createdUsername, createdPassword):
+    ''' Validates that the account doesnt already exist'''
     #Checks to ensure that characters are used in the username and password
     if createdUsername.strip() == "" or createdPassword.strip() == "":
         return False
@@ -60,6 +73,7 @@ def validateNewAccount(createdUsername, createdPassword):
     with open("doctorCredentials.csv", 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
+            print(row)
             if row[0] == createdUsername:
                 return False
             
@@ -67,19 +81,22 @@ def validateNewAccount(createdUsername, createdPassword):
     return True
 
 def addNewAccount(createdUsername, createdPassword):
+    '''Creates new account'''
     if validateNewAccount(createdUsername, createdPassword): #if the function returned true, meaning it passed validation
         #clearing screen
         for widget in frameMain.winfo_children():
             widget.destroy()
-        #append to csv goes here
-        #display homescreen
+        newAccountList = [createdUsername, createdPassword]
+        with open("doctorCredentials.csv", "a+", newline='') as file:
+            csv_writer = writer(file)
+            csv_writer.writerow(newAccountList)
+
         homePage()
     else:
         errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
         errorLabel2.pack(pady=50)
         print("error")
 
-# Log in / create account functions go here ###
 def validateCredentials(username, password):
     # Read credentials and validate
     with open("doctorCredentials.csv", 'r') as file:
@@ -89,7 +106,8 @@ def validateCredentials(username, password):
                 return True
     return False
 
-def loginValidation(username, password):
+def login(username, password):
+    '''Using validate credentials will allow you to log in or not'''
     if validateCredentials(username, password): #if the function returned true, meaning it passed validation
         for widget in frameMain.winfo_children():
             widget.destroy()
@@ -100,22 +118,6 @@ def loginValidation(username, password):
         errorLabel = Label(frameMain, text="X -Incorrect username and/or password. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
         errorLabel.pack(pady=5)
 
-def homePage():
-    # Create home page
-    frameHome = Frame(frameMain, bg="red")
-    frameHome.pack(fill="both", expand=True)
-
-    homeLabel = Label(frameHome, text=f"WELCOME", bg="red")
-    homeLabel.pack()
-
-    loginButton = Button(frameHome, text="Sign in", command=delete)
-    loginButton.pack(pady=25)
-
-def delete():
-    for widget in frameMain.winfo_children():
-        widget.destroy()
-    frameDelete = Frame(frameMain, bg="green")
-    frameDelete.pack(fill="both", expand=True)
 
 
 # Main Code
