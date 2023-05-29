@@ -2,6 +2,8 @@ import csv
 from tkinter import *
 
 def loginPage():
+    for widget in frameMain.winfo_children():
+        widget.destroy()
     frameLogin = Frame(frameMain)
     frameLogin.pack()
     loginLabel = Label(frameLogin, text="Login", font=('Helvetica', 36, "bold"))
@@ -49,7 +51,8 @@ def createAccountPage():
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
     createAccountButton.pack(pady=25)
 
-    return entryCreatedUsername, entryCreatedPassword
+    loginButton = Button(frameCreateAccount, text="Log in", command=loginPage)
+    loginButton.pack()
 
     # createAccountButton = Button(frameCreateAccount, text="Don't Have an Account? Click Here", fg='blue', command=createAccount)
     # createAccountButton.pack(pady=20)
@@ -73,10 +76,10 @@ def addNewAccount(createdUsername, createdPassword):
     if validateNewAccount(createdUsername, createdPassword): #if the function returned true, meaning it passed validation
         #append to csv goes here
         errorLabel = Label(frameMain, text="✓ -Account created successfully! Please log in.", font=("Helvetica", 16), fg="green", bg="#C7F6B6")
-        errorLabel.pack(pady=90)
+        errorLabel.pack(pady=50)
     else:
-        errorLabel = Label(frameMain, text="X -The account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel.pack(pady=5)
+        errorLabel = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
+        errorLabel.pack(pady=50)
 
 # Log in / create account functions go here ###
 def validateCredentials(username, password):
@@ -126,7 +129,7 @@ win.geometry("700x500")
 win.resizable(0, 0)
 
 frameMain = Frame(win) #All other created frames are children of this frame, making them contained under frameMain
-frameMain.pack(side="top", expand=True, fill="both")
+frameMain.pack(expand=True, anchor="n") 
 
 loginPage()
 
