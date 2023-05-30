@@ -90,7 +90,7 @@ def addNewAccount(createdUsername, createdPassword):
         with open("doctorCredentials.csv", "a+", newline='') as file:
             csv_writer = writer(file)
             csv_writer.writerow(newAccountList)
-
+                     
         homePage()
     else:
         errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
