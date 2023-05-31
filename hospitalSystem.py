@@ -22,9 +22,9 @@ def loginPage():
     entryPassword = Entry(frameLogin, show="*")  # Mask password with asterisks
     entryPassword.pack()
 
-    loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
+    loginButton = Button(frameLogin, text="Sign in", command=lambda:login(entryUsername.get(), entryPassword.get()))
     loginButton.pack(pady=25)
-
+    
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
     createAccountButton.pack(pady=20)
 
@@ -54,14 +54,17 @@ def createAccountPage():
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
     createAccountButton.pack(pady=25)
 
-def homePage():
+def homePage(usr):
     ''' Creates home page'''
     # Create home page
     frameHome = Frame(frameMain, bg="red")
     frameHome.pack(fill="both", expand=True)
 
-    homeLabel = Label(frameHome, text=f"WELCOME", bg="red")
+    homeLabel = Label(frameHome, text=f"WELCOME " + usr, bg="red")
     homeLabel.pack()
+
+    viewButton = Button(frameHome, text="View Patients", fg='blue', command=lambda: viewPage(usr))
+    viewButton.pack(pady=20)
 
 def validateNewAccount(createdUsername, createdPassword):
     ''' Validates that the account doesnt already exist'''
@@ -90,8 +93,8 @@ def addNewAccount(createdUsername, createdPassword):
         with open("doctorCredentials.csv", "a+", newline='') as file:
             csv_writer = writer(file)
             csv_writer.writerow(newAccountList)
-                     
-        homePage()
+        usr = createdUsername             
+        homePage(usr)
     else:
         errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
         errorLabel2.pack(pady=50)
@@ -111,14 +114,32 @@ def login(username, password):
     if validateCredentials(username, password): #if the function returned true, meaning it passed validation
         for widget in frameMain.winfo_children():
             widget.destroy()
-        homePage()
+        usr = username
+        homePage(usr)
         #return username #find a way to assign a variable to the validated username in the main code, so that it can be passed through other functions
     else:
         print("Try again")
-        errorLabel = Label(frameMain, text="X -Incorrect username and/or password. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel.pack(pady=5)
+        #errorLabel = Label(frameMain, text="X -Incorrect username and/or password. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
+        #errorLabel.pack(pady=5)
+
+def collectPatients(usr):
+    patients = []
+    with open("patientDatabase.csv", 'r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            if row[0] == usr:
+                patients.append([row[1:]])
+    return patients
 
 
+def viewPage(usr):
+    patients = collectPatients(usr)
+    # if patients is == []:
+     #print you dont have patients
+    # else
+    # print patients
+
+    # button that goes home
 
 # Main Code
 win = Tk()
