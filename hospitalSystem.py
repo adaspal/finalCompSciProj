@@ -30,13 +30,13 @@ from sklearn.neural_network import MLPClassifier
 import csv
 
 def neuralNetworks(list): 
-    data = pd.read_csv('./dataset/heart.csv')
+    data = pd.read_csv('heart.csv')
 
     # Split train data
     y=data.target
     x=data.drop('target',axis=1)
 
-    sample_train, sample_val, labels_train, labels_val = train_test_split(x,y,test_size=0.35, random_state=42)
+    sample_train, sample_val, labels_train, labels_val = train_test_split(x,y,test_size=0.4, random_state=42)
 
     sample_train = sample_train.to_numpy()
 
