@@ -61,7 +61,7 @@ def neuralNetworks(list):
     nnScore = round(nnScore, 2)
     print(f"NN test score: {nnScore}" + "%")
 
-    features = np.array([[list[0], list[1], list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9], list[10], list[11], list[12]]])
+    features = np.array([[list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9], list[10], list[10], list[11], list[13], list[12]]])
     prediction = nn.predict(features)
     print("Prediction: ", prediction)
 
@@ -69,6 +69,8 @@ def neuralNetworks(list):
 win = Tk()
 win.title("Hospital System")
 win.geometry("700x500")
+doctor = "user"
+patient = "patient name"
 age = int(input("Age: "))
 sex = int(input("Sex: "))
 cp = int(input("Chest Pain Type 1-4: "))
@@ -82,7 +84,7 @@ oldpeak = float(input("ST depression induced by exercise: "))
 slope = int(input("Slope of peak: "))
 ves = int(input("Vessel # colored by flouroscopy "))
 thal = int(input("Thal 0-2: "))
-myList = [age, sex, cp, rbp, chol, fbs, rer, hr, eia, oldpeak, slope, ves, thal]
+myList = [doctor, patient, age, sex, cp, rbp, chol, fbs, rer, hr, eia, oldpeak, slope, ves, thal]
 neuralNetworks(myList)
 
 # Doesn't allow the screen to be resized
