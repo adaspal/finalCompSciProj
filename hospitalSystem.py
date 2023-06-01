@@ -1,6 +1,7 @@
 import csv
 from csv import writer
 from tkinter import *
+from PIL import ImageTk, Image
 
 def loginPage():
     '''Creates log in page'''
@@ -8,8 +9,26 @@ def loginPage():
         widget.destroy()
     frameLogin = Frame(frameMain)
     frameLogin.pack()
+
+    # imageBg = Image.open("DocHospital-Bg.png")
+    # # Create a PhotoImage object
+    # photoBg = ImageTk.PhotoImage(imageBg)
+    # labelBg = Label(frameLogin, image=photoBg)
+    # labelBg.image = photoBg  # Keep a reference to the photo object
+    # labelBg.pack()
+    
+    
+    imageLogo = Image.open("DocCare-Logo.png")
+    imageLogo = imageLogo.resize((300, 150)) # resizes (width, height)
+    # Create a PhotoImage object
+    photoLogo = ImageTk.PhotoImage(imageLogo)
+    logolabel = Label(frameLogin, image=photoLogo)
+    logolabel.image = photoLogo  # Keep a reference to the photo object
+    logolabel.pack()
+
+    # Page Header
     loginLabel = Label(frameLogin, text="Login", font=('Helvetica', 36, "bold"))
-    loginLabel.pack(pady=30)  # padding from the top
+    loginLabel.pack(pady=10)  # padding from the top
 
     # Create input fields for username and password
     labelUsername = Label(frameLogin, text="Username:")
@@ -21,12 +40,12 @@ def loginPage():
     labelPassword.pack()
     entryPassword = Entry(frameLogin, show="*")  # Mask password with asterisks
     entryPassword.pack()
-
+    
     loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
     loginButton.pack(pady=25)
 
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
-    createAccountButton.pack(pady=20)
+    createAccountButton.pack(pady=15)
 
     # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
 
@@ -36,6 +55,14 @@ def createAccountPage():
         widget.destroy()
     frameCreateAccount = Frame(frameMain)
     frameCreateAccount.pack(fill="both", expand=True)
+
+    image = Image.open("DocCare-Logo.png")
+    image = image.resize((300, 150)) # resizes (width, height)
+    # Create a PhotoImage object
+    photo = ImageTk.PhotoImage(image)
+    logolabel = Label(frameCreateAccount, image=photo)
+    logolabel.image = photo  # Keep a reference to the photo object
+    logolabel.pack()
 
     loginLabel = Label(frameCreateAccount, text="New Account", font=('Helvetica', 36, "bold"))
     loginLabel.pack(pady=30)  # padding from the top
@@ -94,7 +121,7 @@ def addNewAccount(createdUsername, createdPassword):
         homePage()
     else:
         errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel2.pack(pady=50)
+        errorLabel2.pack(pady=20)
         print("error")
 
 def validateCredentials(username, password):
@@ -122,7 +149,7 @@ def login(username, password):
 
 # Main Code
 win = Tk()
-win.title("Hospital System")
+win.title("DocCare Hospital System")
 win.geometry("700x500")
 
 # Doesn't allow the screen to be resized
