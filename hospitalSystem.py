@@ -107,10 +107,10 @@ def homePage(usr):
     ''' Creates home page'''
     clearPage()
     # Create home page
-    frameHome = Frame(frameMain, bg="red")
+    frameHome = Frame(frameMain)
     frameHome.pack(fill="both", expand=True)
 
-    homeLabel = Label(frameHome, text=f"WELCOME " + usr, bg="red")
+    homeLabel = Label(frameHome, text=f"Welcome " + usr, font=('Helvetica', 36, "bold"))
     homeLabel.pack()
 
     viewButton = Button(frameHome, text="view patient", fg='blue', command=lambda: viewPatientPage(usr))
