@@ -338,9 +338,9 @@ def displayInfo(frame,patientSel):
         csv_reader = csv.reader(file)
         for row in csv_reader:
             if row[1] == patientSel:
-                patientDisplay=Label(frame, font="Calibri,12,bold", justify='left')
-                patientDisplay.pack(side="left")
-                patientDisplay.config(text= row[1:])
+                infoList = row[2:]
+                for item in infoList:
+                    button = Button(frame)
 
 
 def addPatient(list):
