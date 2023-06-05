@@ -37,10 +37,29 @@ def clearPage():
 
 def loginPage():
     '''Creates log in page'''
+    for widget in frameMain.winfo_children():
+        widget.destroy()
     frameLogin = Frame(frameMain)
     frameLogin.pack()
+
+    # imageBg = Image.open("DocHospital-Bg.png")
+    # # Create a PhotoImage object
+    # photoBg = ImageTk.PhotoImage(imageBg)
+    # labelBg = Label(frameLogin, image=photoBg)
+    # labelBg.image = photoBg  # Keep a reference to the photo object
+    # labelBg.pack()
+    
+    imageLogo = Image.open("DocCare-Logo.png")
+    imageLogo = imageLogo.resize((300, 150)) # resizes (width, height)
+    # Create a PhotoImage object
+    photoLogo = ImageTk.PhotoImage(imageLogo)
+    logolabel = Label(frameLogin, image=photoLogo)
+    logolabel.image = photoLogo  # Keep a reference to the photo object
+    logolabel.pack()
+
+    # Page Header
     loginLabel = Label(frameLogin, text="Login", font=('Helvetica', 36, "bold"))
-    loginLabel.pack(pady=30)  # padding from the top
+    loginLabel.pack(pady=10)  # padding from the top
 
     # Create input fields for username and password
     labelUsername = Label(frameLogin, text="Username:")
@@ -52,12 +71,12 @@ def loginPage():
     labelPassword.pack()
     entryPassword = Entry(frameLogin, show="*")  # Mask password with asterisks
     entryPassword.pack()
-
-    loginButton = Button(frameLogin, text="Sign in", command=lambda:login(entryUsername.get(), entryPassword.get()))
-    loginButton.pack(pady=25)
     
+    loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
+    loginButton.pack(pady=25)
+
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
-    createAccountButton.pack(pady=20)
+    createAccountButton.pack(pady=15)
 
     # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
 
@@ -78,7 +97,7 @@ def createAccountPage():
 
     labelCreatedPassword = Label(frameCreateAccount, text="Password:")
     labelCreatedPassword.pack()
-    entryCreatedPassword = Entry(frameCreateAccount)
+    entryCreatedPassword = Entry(frameCreateAccount, show="*")
     entryCreatedPassword.pack()
 
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
