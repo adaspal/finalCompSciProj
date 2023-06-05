@@ -1,7 +1,12 @@
+# File imports
 import csv
 from csv import writer
+
+# Tkinter imports
 from tkinter import *
-# General imports
+from PIL import ImageTk, Image
+
+# General ML imports
 import os
 import gzip
 import numpy as np
