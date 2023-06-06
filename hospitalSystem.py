@@ -1,9 +1,13 @@
+# File imports
 import csv
 from csv import writer
-import tkinter as tk
+
+# Tkinter imports
 from tkinter import *
- 
-# General imports
+from tkinter import ttk
+from PIL import ImageTk, Image
+
+# General ML imports
 import os
 import gzip
 import numpy as np
@@ -31,12 +35,32 @@ from sklearn.neural_network import MLPClassifier
 def clearPage():
     for widget in frameMain.winfo_children():
         widget.destroy()
+
 def loginPage():
     '''Creates log in page'''
+    for widget in frameMain.winfo_children():
+        widget.destroy()
     frameLogin = Frame(frameMain)
     frameLogin.pack()
+
+    # imageBg = Image.open("DocHospital-Bg.png")
+    # # Create a PhotoImage object
+    # photoBg = ImageTk.PhotoImage(imageBg)
+    # labelBg = Label(frameLogin, image=photoBg)
+    # labelBg.image = photoBg  # Keep a reference to the photo object
+    # labelBg.pack()
+    
+    imageLogo = Image.open("DocCare-Logo.png")
+    imageLogo = imageLogo.resize((300, 150)) # resizes (width, height)
+    # Create a PhotoImage object
+    photoLogo = ImageTk.PhotoImage(imageLogo)
+    logolabel = Label(frameLogin, image=photoLogo)
+    logolabel.image = photoLogo  # Keep a reference to the photo object
+    logolabel.pack()
+
+    # Page Header
     loginLabel = Label(frameLogin, text="Login", font=('Helvetica', 36, "bold"))
-    loginLabel.pack(pady=30)  # padding from the top
+    loginLabel.pack(pady=10)  # padding from the top
 
     # Create input fields for username and password
     labelUsername = Label(frameLogin, text="Username:")
@@ -48,12 +72,12 @@ def loginPage():
     labelPassword.pack()
     entryPassword = Entry(frameLogin, show="*")  # Mask password with asterisks
     entryPassword.pack()
-
-    loginButton = Button(frameLogin, text="Sign in", command=lambda:login(entryUsername.get(), entryPassword.get()))
-    loginButton.pack(pady=25)
     
+    loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
+    loginButton.pack(pady=25)
+
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
-    createAccountButton.pack(pady=20)
+    createAccountButton.pack()
 
     # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
 
@@ -62,6 +86,14 @@ def createAccountPage():
     clearPage()
     frameCreateAccount = Frame(frameMain)
     frameCreateAccount.pack(fill="both", expand=True)
+
+    imageLogo = Image.open("DocCare-Logo.png")
+    imageLogo = imageLogo.resize((300, 150)) # resizes (width, height)
+    # Create a PhotoImage object
+    photoLogo = ImageTk.PhotoImage(imageLogo)
+    logolabel = Label(frameCreateAccount, image=photoLogo)
+    logolabel.image = photoLogo  # Keep a reference to the photo object
+    logolabel.pack()
 
     loginLabel = Label(frameCreateAccount, text="New Account", font=('Helvetica', 36, "bold"))
     loginLabel.pack(pady=30)  # padding from the top
@@ -74,7 +106,7 @@ def createAccountPage():
 
     labelCreatedPassword = Label(frameCreateAccount, text="Password:")
     labelCreatedPassword.pack()
-    entryCreatedPassword = Entry(frameCreateAccount)
+    entryCreatedPassword = Entry(frameCreateAccount, show="*")
     entryCreatedPassword.pack()
 
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
@@ -84,16 +116,24 @@ def homePage(usr):
     ''' Creates home page'''
     clearPage()
     # Create home page
-    frameHome = Frame(frameMain, bg="red")
+    frameHome = Frame(frameMain)
     frameHome.pack(fill="both", expand=True)
 
-    homeLabel = Label(frameHome, text=f"WELCOME " + usr, bg="red")
+    homeLabel = Label(frameHome, text=f"Welcome " + usr, font=('Helvetica', 36, "bold"))
     homeLabel.pack()
 
-    viewButton = Button(frameHome, text="view patient", fg='blue', command=lambda: viewPatientPage(usr))
-    viewButton.pack(pady=30)
+    viewButton = Button(frameHome, text="View patient", fg='blue', command=lambda: viewPatientPage(usr))
+    viewButton.pack(pady=40)
     addButton = Button(frameHome, text="Add patient", fg='blue', command=lambda: addPatientPage(usr))
     addButton.pack(pady=40)
+    changeButton = Button(frameHome, text="Change patient", fg='blue', command=lambda: changePatientPage(usr))
+    changeButton.pack(pady=40)
+    signOutButton = Button(frameHome, text="Sign Out", fg='blue', command=lambda: signOut())
+    signOutButton.pack(pady=40)
+    
+def signOut():
+    #creating this function to run the login page makes the program more modular and easy to maintain
+    loginPage()
 
 def validateNewAccount(createdUsername, createdPassword):
     ''' Validates that the account doesnt already exist'''
@@ -124,7 +164,7 @@ def addNewAccount(createdUsername, createdPassword):
         homePage(usr)
     else:
         errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel2.pack(pady=50)
+        errorLabel2.pack(pady=10)
         print("error")
 
 def validateCredentials(username, password):
@@ -138,14 +178,15 @@ def validateCredentials(username, password):
 
 def login(username, password):
     '''Using validate credentials will allow you to log in or not'''
-    if validateCredentials(username, password): #if the function returned true, meaning it passed validation
+    if validateCredentials(username, password):
         usr = username
         homePage(usr)
-        #return username #find a way to assign a variable to the validated username in the main code, so that it can be passed through other functions
     else:
         print("Try again")
-        #errorLabel = Label(frameMain, text="X -Incorrect username and/or password. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        #errorLabel.pack(pady=5)
+        if not hasattr(login, 'errorLabel'):  # Check if errorLabel attribute exists so it does not create a new frame
+            login.errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red", bg="#FFE2E1")
+            login.errorLabel.pack(pady=15)
+        login.errorLabel.config(text="X -Incorrect username and/or password. Please try again.")
 
 def collectPatients(usr):
     patients = []
@@ -153,15 +194,49 @@ def collectPatients(usr):
         csv_reader = csv.reader(file)
         for row in csv_reader:
             if row[0] == usr:
-                patients.append([row[1:]])
+                patients.append(row[1:])
     return patients
 
 def viewPatientPage(usr):
     clearPage()
     frameviewPatientPage = Frame(frameMain)
     frameviewPatientPage.pack(fill="both", expand=True)
-    print(collectPatients(usr))
 
+    patientsList = collectPatients(usr)
+
+    if not patientsList:
+        errorLabel = Label(frameviewPatientPage, text="You have no patients to view")
+        errorLabel.pack()
+        addButton = Button(frameviewPatientPage, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton.pack()
+    else:
+        tree = ttk.Treeview(frameviewPatientPage, xscrollcommand=True)
+
+        # Define the columns for the table
+        columns = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
+
+        # Configure the Treeview columns
+        tree["columns"] = columns
+        tree.heading("#0", text="Index")
+        tree.column("#0", width=50)
+
+        # Configure each column
+        column_width = 80  # Adjust this value as desired
+        for column in columns:
+            tree.heading(column, text=column)
+            tree.column(column, width=column_width)
+
+        # Insert data into the Treeview
+        for index, patient in enumerate(patientsList):
+            tree.insert('', 'end', text=index, values=patient)
+
+        # Configure the scrollbar for horizontal scrolling
+        scrollbar = ttk.Scrollbar(frameviewPatientPage, orient="horizontal", command=tree.xview)
+        tree.configure(xscrollcommand=scrollbar.set)
+        scrollbar.pack(side="bottom", fill="x")
+
+        # Pack and display the Treeview
+        tree.pack()
 
 def addPatientPage(usr):
     clearPage()
@@ -395,6 +470,142 @@ def neuralNetworks(list):
     else:
         prediction = 'Yes'
     return prediction
+
+def changePatientPage(usr):
+    # clears previous page and creates page
+    clearPage()
+    framechangePatient = Frame(frameMain)
+    framechangePatient.pack(fill="both", expand=True)
+
+    # creates list of factors that doctors can select from to change
+    with open('patientDatabase.csv', 'r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            if row[0] == 'doctor':
+                factors = row[2:15]
+
+    # creates list of patients that doctors can select
+    patientSel = StringVar(framechangePatient)
+    patientSel.set("Patient: ")
+    patientNameList = []
+    for item in collectPatients(usr):
+        patientNameList.append(item[0])
+    # if list is empty, doctor cannot change any patients
+    if not patientNameList:
+        errorLabel = Label(framechangePatient, text="You have no patients to change.")
+        errorLabel.pack()
+        addButton = Button(framechangePatient, text="Add patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton.pack(side='left')
+        homeButton = Button(framechangePatient,text="Home", command=lambda: homePage(usr))
+        homeButton.pack(side='right')
+    else: # if doctor has patients
+
+        # option menu for patients to select from
+        patientSel = StringVar(framechangePatient)
+        patientSel.set("Patient: ")
+        # once selected, display current information
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(usr, patientSel.get(), framechangePatient))
+        patientMenu.pack(side='left')
+        # option menu for factors to select from to change
+        factorSel = StringVar(framechangePatient)
+        factorSel.set("Factor: ")
+
+        factorMenu = OptionMenu(framechangePatient, factorSel,*factors, command = lambda x: changeInfo(usr,patientSel.get(), framechangePatient,factorSel.get() ))
+        factorMenu.pack(side='right')
+
+def infoListGen(doctor, patient):
+    for item in collectPatients(doctor):
+        if item[0] == patient:
+            infoList = item[:14]
+    return infoList
+    
+
+def displayLabel(doctor, patient, frame):
+        currentLabel = Label(frame, text= infoListGen(doctor,patient))
+        currentLabel.pack(side='bottom')
+
+def changeInfo(doctor, patient, frame, factor):
+    infoList = infoListGen(doctor,patient)
+    if factor == "age":
+        index = 1
+        ageLabel = Label(frame, text="Age:")
+        ageLabel.pack()
+        ageSP = Spinbox(frame, from_=0, to=100,)
+        ageSP.pack()
+        newFactorVal = ageSP
+        widgets = [ageSP, ageLabel]
+    elif factor == "sex":
+        index = 2
+        sexSel = IntVar(frame)
+        sexLabel = Label(frame, text="Sex:")
+        sexLabel.pack()
+        sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0)
+        sexOptionZero.pack()
+        sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
+        sexOptionOne.pack()
+        newFactorVal = sexSel
+        widgets = [sexLabel,sexOptionOne,sexOptionZero]
+    elif factor == "cp":
+        index = 3
+        cptSel = IntVar(frame)
+        cptLabel = Label(frame, text="Chest pain level:")
+        cptLabel.pack()
+        cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
+        cptOptionZero.pack()
+        cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
+        cptOptionOne.pack()
+        cptOptionTwo = Radiobutton(frame, text="2", variable=cptSel, value= 2)
+        cptOptionTwo.pack()
+        cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
+        cptOptionThree.pack()
+        newFactorVal = cptSel
+        widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
+
+
+    saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton))
+    saveButton.pack()
+
+def hideMe(widgets,button):
+    for item in widgets:
+        item.pack_forget()
+    button.pack_forget()
+
+def saveInfo(doctor, patient, frame, factor, index, list, widgets, button):
+        hideMe(widgets, button)
+        list[index] = factor
+        newList= [doctor, patient]
+        for item in list[1:]:
+            newList.append(float(item))
+        print("New list:", newList)
+        newList.append(neuralNetworks(newList))
+        print("With new prediction:", newList)
+        changePatient(newList)
+        print("Change sucessful")
+
+        displayLabel(doctor, patient, frame)
+
+def addPatient(list):
+    with open("patientDatabase.csv", 'a', newline="") as file:
+       csv_writer = writer(file)
+       csv_writer.writerow(list)
+
+def changePatient(list):
+    removeOldPatient(list)
+    addPatient(list)
+
+def removeOldPatient(list):
+    with open("patientDatabase.csv", 'r') as file:
+       csv_reader = csv.reader(file)
+       patients =  []
+       for row in csv_reader:
+           patients.append(row)
+    for item in patients:
+        if item[1] == list[1]:
+            patients.remove(item)
+    with open("patientDatabase.csv", 'w', newline="") as file:
+       csv_writer = writer(file)
+       csv_writer.writerows(patients)
+    
 # Main Code
 win = Tk()
 win.title("Hospital System")
