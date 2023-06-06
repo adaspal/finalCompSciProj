@@ -343,28 +343,90 @@ def changePatientPage(usr):
 
     patientSel = StringVar(framechangePatient)
     patientSel.set("Patient: ")
-    patientList = []
+    patientNameList = []
+    with open('patientDatabase.csv', 'r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            if row[0] == 'doctor':
+                factors = row[2:15]
+
     for item in collectPatients(usr):
-        patientList.append(item[0])
-    if not patientList:
-        errorLabel = Label(framechangePatient, text="You have no patients to change")
+        patientNameList.append(item[0])
+    if not patientNameList:
+        errorLabel = Label(framechangePatient, text="You have no patients to change.")
         errorLabel.pack()
+        addButton = Button(framechangePatient, text="Add patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton.pack(side='left')
+        homeButton = Button(framechangePatient,text="Home", command=lambda: homePage(usr))
+        homeButton.pack(side='right')
     else:
         patientSel = StringVar(framechangePatient)
         patientSel.set("Patient: ")
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientList, command=lambda x: displayInfo(framechangePatient,patientSel.get()))
-        patientMenu.pack()
-        patientDisplay=Label(framechangePatient, font="Calibri,12,bold")
-        patientDisplay.pack(padx=20, pady=20)
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: infoList(usr, patientSel.get(), framechangePatient))
+        patientMenu.pack(side='left')
 
-def displayInfo(frame,patientSel):
-    with open("patientDatabase.csv", 'r') as file:
-        csv_reader = csv.reader(file)
-        for row in csv_reader:
-            if row[1] == patientSel:
-                infoList = row[2:]
-                for item in infoList:
-                    button = Button(frame)
+        factorSel = StringVar(framechangePatient)
+        factorSel.set("Factor: ")
+        factorMenu = OptionMenu(framechangePatient, factorSel,*factors, command = lambda x: changeInfo(usr,framechangePatient,factorSel.get(), patientSel.get() ))
+        factorMenu.pack(side='right')
+
+def infoList(doctor, patient, frame):
+    for item in collectPatients(doctor):
+        if item[0] == patient:
+            infoList = item
+    displayLabel(frame,infoList)
+    
+
+def displayLabel(frame, list):
+        currentLabel = Label(frame, text= list)
+        currentLabel.pack(side='bottom')
+
+def changeInfo(usr,frame,factor, patient):
+    for item in collectPatients(usr):
+        if item[0] == patient:
+            list = item
+    if factor == "age":
+        index = 1
+        ageLabel = Label(frame, text="Age:")
+        ageLabel.pack()
+        ageSP = Spinbox(frame, from_=0, to=100,)
+        ageSP.pack()
+        factor = ageSP
+        widgets = [ageSP, ageLabel]
+    elif factor == "sex":
+        index = 2
+        sexSel = StringVar(frame)
+        sexSel.set("Sex: ")
+        sexMenu = OptionMenu(frame, sexSel, "Male","Female")
+        sexMenu.pack()
+        factor = sexSel
+        widgets = [sexMenu]
+    elif factor == "cp":
+        index = 3
+        cptSel = IntVar(frame)
+        cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
+        cptOptionZero.pack()
+        cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
+        cptOptionOne.pack()
+        cptOptionTwo = Radiobutton(frame, text="2", variable=cptSel, value= 2)
+        cptOptionTwo.pack()
+        cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
+        cptOptionThree.pack()
+        factor = cptSel
+        widgets = [cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
+
+    saveButton = Button(frame,text="save", command=lambda: saveInfo(index,list, factor.get(), frame, widgets, saveButton))
+    saveButton.pack(side='right')
+
+def hideMe(widgets, button):
+    for item in widgets:
+        item.pack_forget()
+    button.pack_forget()
+def saveInfo(index, list, factor, frame, widgets, button):
+        hideMe(widgets, button)
+        list[index] = factor
+        displayLabel(frame,list)
+
 
 
 def addPatient(list):
