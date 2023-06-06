@@ -185,22 +185,24 @@ def addPatientPage(usr):
     sexMenu = OptionMenu(frameaddPatientPage, sexSel, "Male","Female" )
     sexMenu.pack()
 
+    cptLabel = Label(frameaddPatientPage, text="Chest Pain Type:")
+    cptLabel.pack()
     cptSel = StringVar(frameaddPatientPage)
-    cptOptionZero = Radiobutton(frameaddPatientPage, text="0", variable=cptSel, value= 0)
+    cptOptionZero = Radiobutton(frameaddPatientPage, text="0-Typical Angina", variable=cptSel, value= 0)
     cptOptionZero.pack()
-    cptOptionOne = Radiobutton(frameaddPatientPage, text="1", variable=cptSel, value= 1)
+    cptOptionOne = Radiobutton(frameaddPatientPage, text="1-Atypical Angina", variable=cptSel, value= 1)
     cptOptionOne.pack()
-    cptOptionTwo = Radiobutton(frameaddPatientPage, text="2", variable=cptSel, value= 2)
+    cptOptionTwo = Radiobutton(frameaddPatientPage, text="2-Non-Anginal", variable=cptSel, value= 2)
     cptOptionTwo.pack()
-    cptOptionThree = Radiobutton(frameaddPatientPage, text="3", variable=cptSel, value= 3)
+    cptOptionThree = Radiobutton(frameaddPatientPage, text="3-Asymptomatic", variable=cptSel, value= 3)
     cptOptionThree.pack()
+    
+    bpsLabel = Label(frameaddPatientPage, text="Resting Blood Pressure:")
+    bpsLabel.pack()
+    bpsSP = Spinbox(frameaddPatientPage, from_=0, to=100)
+    bpsSP.pack()
 
-
-    bpsSel = IntVar(frameaddPatientPage)
-    bpsScale = Scale(frameaddPatientPage, from_= 40, to=200, showvalue=True, label= "resting BPS", variable=bpsSel, orient="horizontal")
-    bpsScale.pack()
-
-    nextButton = Button(frameaddPatientPage, text="Next", fg='blue', command=lambda: addPatientPageTwo(usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSel.get() ))
+    nextButton = Button(frameaddPatientPage, text="Next", fg='blue', command=lambda: addPatientPageTwo(usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
     nextButton.pack()
 
 
@@ -209,100 +211,130 @@ def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
         sex = 1
     else: 
         sex = 0
-    patientHealthList= [doctor, patient, int(age), int(sex), int(cpt), int(rbp)]
-    clearPage()
-    frameaddPatientPageTwo = Frame(frameMain)
-    frameaddPatientPageTwo.pack(fill="both", expand=True)
+    patientHealthList= [doctor, patient, age, sex, cpt, rbp]
+    if validatePatientData(patientHealthList) == True:
+        clearPage()
+        frameaddPatientPageTwo = Frame(frameMain)
+        frameaddPatientPageTwo.pack(fill="both", expand=True)
+        
+        cholLabel = Label(frameaddPatientPageTwo, text="Cholesterol Level:")
+        cholLabel.pack()
+        cholSP = Spinbox(frameaddPatientPageTwo, from_=0, to=250)
+        cholSP.pack()
 
-    cholSel = IntVar(frameaddPatientPageTwo)
-    cholScale = Scale(frameaddPatientPageTwo, from_= 0, to=250, showvalue=True, label= "cholesterol level", variable=cholSel, orient="horizontal")
-    cholScale.pack()
+        fbpsSel = StringVar(frameaddPatientPageTwo)
+        fbpsPatient = Label(frameaddPatientPageTwo, text="Fasting Blood Sugar:")
+        fbpsPatient.pack()
+        fbsOptionZero = Radiobutton(frameaddPatientPageTwo, text="0", variable=fbpsSel, value= 0)
+        fbsOptionZero.pack()
+        fbsOptionOne = Radiobutton(frameaddPatientPageTwo, text="1", variable=fbpsSel, value= 1)
+        fbsOptionOne.pack()
 
-    fbpsSel = StringVar(frameaddPatientPageTwo)
-    fbpsPatient = Label(frameaddPatientPageTwo, text="fbps:")
-    fbpsPatient.pack()
-    fbsOptionZero = Radiobutton(frameaddPatientPageTwo, text="0", variable=fbpsSel, value= 0)
-    fbsOptionZero.pack()
-    fbsOptionOne = Radiobutton(frameaddPatientPageTwo, text="1", variable=fbpsSel, value= 1)
-    fbsOptionOne.pack()
+        restecgSel = StringVar(frameaddPatientPageTwo)
+        restecgPatient = Label(frameaddPatientPageTwo, text="Resting ECG Result:")
+        restecgPatient.pack()
+        restecgOptionZero = Radiobutton(frameaddPatientPageTwo, text="0", variable=restecgSel, value= 0)
+        restecgOptionZero.pack()
+        restecgOptionOne = Radiobutton(frameaddPatientPageTwo, text="1", variable=restecgSel, value= 1)
+        restecgOptionOne.pack()
+        restecgOptionTwo = Radiobutton(frameaddPatientPageTwo, text="2", variable=restecgSel, value= 2)
+        restecgOptionTwo.pack()
+        
+        thalLabel = Label(frameaddPatientPageTwo, text="Max. Heart Rate Achieved:")
+        thalLabel.pack()
+        thalSP = Spinbox(frameaddPatientPageTwo, from_=40, to=250)
+        thalSP.pack()
 
-    restecgSel = StringVar(frameaddPatientPageTwo)
-    restecgPatient = Label(frameaddPatientPageTwo, text="rest ecg:")
-    restecgPatient.pack()
-    restecgOptionZero = Radiobutton(frameaddPatientPageTwo, text="0", variable=restecgSel, value= 0)
-    restecgOptionZero.pack()
-    restecgOptionOne = Radiobutton(frameaddPatientPageTwo, text="1", variable=restecgSel, value= 1)
-    restecgOptionOne.pack()
-    restecgOptionTwo = Radiobutton(frameaddPatientPageTwo, text="2", variable=restecgSel, value= 2)
-    restecgOptionTwo.pack()
+        exangSel = StringVar(frameaddPatientPageTwo)
+        exangLabel = Label(frameaddPatientPageTwo, text="excercise induced angia:")
+        exangLabel.pack()
+        exangOptionOne = Radiobutton(frameaddPatientPageTwo, text="Yes", variable=exangSel, value= 1)
+        exangOptionOne.pack()
+        exangOptionZero = Radiobutton(frameaddPatientPageTwo, text="No", variable=exangSel, value= 0)
+        exangOptionZero.pack()
 
-    thalachSel = IntVar(frameaddPatientPageTwo)
-    thalachScale = Scale(frameaddPatientPageTwo, from_= 40, to=250, showvalue=True, label= "Maximum heart rate achieved", variable=thalachSel, orient="horizontal")
-    thalachScale.pack()
-
-    exangSel = StringVar(frameaddPatientPageTwo)
-    exangLabel = Label(frameaddPatientPageTwo, text="excercise induced angia:")
-    exangLabel.pack()
-    exangOptionOne = Radiobutton(frameaddPatientPageTwo, text="Yes", variable=exangSel, value= 1)
-    exangOptionOne.pack()
-    exangOptionZero = Radiobutton(frameaddPatientPageTwo, text="No", variable=exangSel, value= 0)
-    exangOptionZero.pack()
-
-    nextButton = Button(frameaddPatientPageTwo, text="Next", fg='blue', command=lambda: addPatientPageThree(patientHealthList,cholSel.get(), fbpsSel.get(), restecgSel.get(), thalachSel.get(), exangSel.get() ))
-    nextButton.pack()
+        nextButton = Button(frameaddPatientPageTwo, text="Next", fg='blue', command=lambda: addPatientPageThree(patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
+        nextButton.pack()
+    else:
+        print("Error")
 
 def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
-    patientHealthList.extend([int(chol),int(fbs),int(restecg),int(thalach),int(exang)])
-    clearPage()
-    frameaddPatientPageThree = Frame(frameMain)
-    frameaddPatientPageThree.pack(fill="both", expand=True)
+    patientHealthList.extend([chol,fbs,restecg,thalach,exang])
+    if validatePatientData(patientHealthList) == True:
+        clearPage()
+        frameaddPatientPageThree = Frame(frameMain)
+        frameaddPatientPageThree.pack(fill="both", expand=True)
 
-    oldpeakPatient = Label(frameaddPatientPageThree, text="St depression induced by excercise relative to rest:")
-    oldpeakPatient.pack()
-    oldpeakSP = Spinbox(frameaddPatientPageThree, from_=0, to=6,increment= 0.1)
-    oldpeakSP.pack()
+        oldpeakPatient = Label(frameaddPatientPageThree, text="St depression induced by excercise relative to rest:")
+        oldpeakPatient.pack()
+        oldpeakSP = Spinbox(frameaddPatientPageThree, from_=0, to=6,increment= 0.1)
+        oldpeakSP.pack()
 
-    slopeSel = StringVar(frameaddPatientPageThree)
-    slopePatient = Label(frameaddPatientPageThree, text="Slope:")
-    slopePatient.pack()
-    slopeOptionZero = Radiobutton(frameaddPatientPageThree, text="0", variable=slopeSel, value= 0)
-    slopeOptionZero.pack()
-    slopeOptionOne = Radiobutton(frameaddPatientPageThree, text="1", variable=slopeSel, value= 1)
-    slopeOptionOne.pack()
-    slopeOptionTwo = Radiobutton(frameaddPatientPageThree, text="2", variable=slopeSel, value= 2)
-    slopeOptionTwo.pack()
+        slopeSel = StringVar(frameaddPatientPageThree)
+        slopePatient = Label(frameaddPatientPageThree, text="Slope:")
+        slopePatient.pack()
+        slopeOptionZero = Radiobutton(frameaddPatientPageThree, text="0", variable=slopeSel, value= 0)
+        slopeOptionZero.pack()
+        slopeOptionOne = Radiobutton(frameaddPatientPageThree, text="1", variable=slopeSel, value= 1)
+        slopeOptionOne.pack()
+        slopeOptionTwo = Radiobutton(frameaddPatientPageThree, text="2", variable=slopeSel, value= 2)
+        slopeOptionTwo.pack()
 
-    caSel = StringVar(frameaddPatientPageThree)
-    caPatient = Label(frameaddPatientPageThree, text="Num of vessels coloured by floroscopy:")
-    caPatient.pack()
-    caOptionZero = Radiobutton(frameaddPatientPageThree, text="0", variable=caSel, value= 0)
-    caOptionZero.pack()
-    caOptionOne = Radiobutton(frameaddPatientPageThree, text="1", variable=caSel, value= 1)
-    caOptionOne.pack()
-    caOptionTwo = Radiobutton(frameaddPatientPageThree, text="2", variable=caSel, value= 2)
-    caOptionTwo.pack()
-    caOptionThree = Radiobutton(frameaddPatientPageThree, text="3", variable=caSel, value= 3)
-    caOptionThree.pack()
+        caSel = StringVar(frameaddPatientPageThree)
+        caPatient = Label(frameaddPatientPageThree, text="Num of vessels coloured by floroscopy:")
+        caPatient.pack()
+        caOptionZero = Radiobutton(frameaddPatientPageThree, text="0", variable=caSel, value= 0)
+        caOptionZero.pack()
+        caOptionOne = Radiobutton(frameaddPatientPageThree, text="1", variable=caSel, value= 1)
+        caOptionOne.pack()
+        caOptionTwo = Radiobutton(frameaddPatientPageThree, text="2", variable=caSel, value= 2)
+        caOptionTwo.pack()
+        caOptionThree = Radiobutton(frameaddPatientPageThree, text="3", variable=caSel, value= 3)
+        caOptionThree.pack()
 
-    thalSel = StringVar(frameaddPatientPageThree)
-    thalPatient = Label(frameaddPatientPageThree, text="thal:")
-    thalPatient.pack()
-    thalOptionOne = Radiobutton(frameaddPatientPageThree, text="normal", variable=thalSel, value= 1)
-    thalOptionOne.pack()
-    thalOptionTwo = Radiobutton(frameaddPatientPageThree, text="fixed defect", variable=thalSel, value= 2)
-    thalOptionTwo.pack()
-    thalOptionThree = Radiobutton(frameaddPatientPageThree, text="reversable defect", variable=thalSel, value= 3)
-    thalOptionThree.pack()
+        thalSel = StringVar(frameaddPatientPageThree)
+        thalPatient = Label(frameaddPatientPageThree, text="thal:")
+        thalPatient.pack()
+        thalOptionOne = Radiobutton(frameaddPatientPageThree, text="normal", variable=thalSel, value= 1)
+        thalOptionOne.pack()
+        thalOptionTwo = Radiobutton(frameaddPatientPageThree, text="fixed defect", variable=thalSel, value= 2)
+        thalOptionTwo.pack()
+        thalOptionThree = Radiobutton(frameaddPatientPageThree, text="reversable defect", variable=thalSel, value= 3)
+        thalOptionThree.pack()
 
-    
-    saveButton = Button(frameaddPatientPageThree, text="Save", fg='blue', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
-    saveButton.pack()
+        
+        saveButton = Button(frameaddPatientPageThree, text="Save", fg='blue', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
+        saveButton.pack()
+    else:
+        print("Error")
+        
+def validatePatientData(patientInfoList):
+    for item in patientInfoList[2:]:
+        if isinstance(item, str):
+            if item.isdigit() == True or isfloat(item) == True:
+                continue
+            else:
+                return False
+        else:
+            continue
+    return True
+
+def isfloat(num):
+    try:
+        float(num)
+        return True
+    except ValueError:
+        return False
 
 def diagnosePatient(patientHealthList, oldpeak, slope, ca, thal):
-    patientHealthList.extend([float(oldpeak), int(slope), int(ca), int(thal)])
-    patientHealthList.append(neuralNetworks(patientHealthList))
-    addPatient(patientHealthList)
-
+    patientHealthList.extend([oldpeak, slope, ca, thal])
+    
+    if validatePatientData(patientHealthList) == True:
+        patientHealthList.append(neuralNetworks(patientHealthList))
+        addPatient(patientHealthList)
+    else:
+        print("Error")
+    
 def addPatient(list):
     with open("patientDatabase.csv", 'a', newline="") as file:
        csv_writer = writer(file)
@@ -341,7 +373,21 @@ def neuralNetworks(list):
     nnScore = round(nnScore, 2)
     print(f"NN test score: {nnScore}" + "%")
 
-    features = np.array([[list[2], list[3], list[4], list[5], list[6], list[7], list[8], list[9], list[10], list[10], list[11], list[13], list[12]]])
+
+    age = int(list[2])
+    sex = int(list[3])
+    cp = int(list[4])
+    trestbps = int(list[5])
+    chol = int(list[6])
+    fbs = int(list[7])
+    restecg = int(list[8])
+    thalach = int(list[9])
+    exang = int(list[10])
+    oldpeak = float(list[11])
+    slope = int(list[12])
+    ca = int(list[13])
+    thal = int(list[14])
+    features = np.array([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
     prediction = nn.predict(features)
     prediction = prediction[0]
     if prediction == 0:
