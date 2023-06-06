@@ -337,21 +337,25 @@ def diagnosePatient(patientHealthList, oldpeak, slope, ca, thal):
     addPatient(patientHealthList)
 
 def changePatientPage(usr):
+    # clears previous page and creates page
     clearPage()
     framechangePatient = Frame(frameMain)
     framechangePatient.pack(fill="both", expand=True)
 
-    patientSel = StringVar(framechangePatient)
-    patientSel.set("Patient: ")
-    patientNameList = []
+    # creates list of factors that doctors can select from to change
     with open('patientDatabase.csv', 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
             if row[0] == 'doctor':
                 factors = row[2:15]
 
+    # creates list of patients that doctors can select
+    patientSel = StringVar(framechangePatient)
+    patientSel.set("Patient: ")
+    patientNameList = []
     for item in collectPatients(usr):
         patientNameList.append(item[0])
+    # if list is empty, doctor cannot change any patients
     if not patientNameList:
         errorLabel = Label(framechangePatient, text="You have no patients to change.")
         errorLabel.pack()
@@ -359,51 +363,58 @@ def changePatientPage(usr):
         addButton.pack(side='left')
         homeButton = Button(framechangePatient,text="Home", command=lambda: homePage(usr))
         homeButton.pack(side='right')
-    else:
+    else: # if doctor has patients
+
+        # option menu for patients to select from
         patientSel = StringVar(framechangePatient)
         patientSel.set("Patient: ")
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: infoList(usr, patientSel.get(), framechangePatient))
+        # once selected, display current information
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(usr, patientSel.get(), framechangePatient))
         patientMenu.pack(side='left')
-
+        # option menu for factors to select from to change
         factorSel = StringVar(framechangePatient)
         factorSel.set("Factor: ")
-        factorMenu = OptionMenu(framechangePatient, factorSel,*factors, command = lambda x: changeInfo(usr,framechangePatient,factorSel.get(), patientSel.get() ))
+
+        factorMenu = OptionMenu(framechangePatient, factorSel,*factors, command = lambda x: changeInfo(usr,patientSel.get(), framechangePatient,factorSel.get() ))
         factorMenu.pack(side='right')
 
-def infoList(doctor, patient, frame):
+def infoListGen(doctor, patient):
     for item in collectPatients(doctor):
         if item[0] == patient:
-            infoList = item
-    displayLabel(frame,infoList)
+            infoList = item[:14]
+    return infoList
     
 
-def displayLabel(frame, list):
-        currentLabel = Label(frame, text= list)
+def displayLabel(doctor, patient, frame):
+        currentLabel = Label(frame, text= infoListGen(doctor,patient))
         currentLabel.pack(side='bottom')
 
-def changeInfo(usr,frame,factor, patient):
-    for item in collectPatients(usr):
-        if item[0] == patient:
-            list = item
+def changeInfo(doctor, patient, frame, factor):
+    infoList = infoListGen(doctor,patient)
     if factor == "age":
         index = 1
         ageLabel = Label(frame, text="Age:")
         ageLabel.pack()
         ageSP = Spinbox(frame, from_=0, to=100,)
         ageSP.pack()
-        factor = ageSP
+        newFactorVal = ageSP
         widgets = [ageSP, ageLabel]
     elif factor == "sex":
         index = 2
-        sexSel = StringVar(frame)
-        sexSel.set("Sex: ")
-        sexMenu = OptionMenu(frame, sexSel, "Male","Female")
-        sexMenu.pack()
-        factor = sexSel
-        widgets = [sexMenu]
+        sexSel = IntVar(frame)
+        sexLabel = Label(frame, text="Sex:")
+        sexLabel.pack()
+        sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0)
+        sexOptionZero.pack()
+        sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
+        sexOptionOne.pack()
+        newFactorVal = sexSel
+        widgets = [sexLabel,sexOptionOne,sexOptionZero]
     elif factor == "cp":
         index = 3
         cptSel = IntVar(frame)
+        cptLabel = Label(frame, text="Chest pain level:")
+        cptLabel.pack()
         cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
         cptOptionZero.pack()
         cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
@@ -412,20 +423,31 @@ def changeInfo(usr,frame,factor, patient):
         cptOptionTwo.pack()
         cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
         cptOptionThree.pack()
-        factor = cptSel
-        widgets = [cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
+        newFactorVal = cptSel
+        widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
 
-    saveButton = Button(frame,text="save", command=lambda: saveInfo(index,list, factor.get(), frame, widgets, saveButton))
-    saveButton.pack(side='right')
 
-def hideMe(widgets, button):
+    saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton))
+    saveButton.pack()
+
+def hideMe(widgets,button):
     for item in widgets:
         item.pack_forget()
     button.pack_forget()
-def saveInfo(index, list, factor, frame, widgets, button):
+
+def saveInfo(doctor, patient, frame, factor, index, list, widgets, button):
         hideMe(widgets, button)
         list[index] = factor
-        displayLabel(frame,list)
+        newList= [doctor, patient]
+        for item in list[1:]:
+            newList.append(float(item))
+        print("New list:", newList)
+        newList.append(neuralNetworks(newList))
+        print("With new prediction:", newList)
+        changePatient(newList)
+        print("Change sucessful")
+
+        displayLabel(doctor, patient, frame)
 
 
 
