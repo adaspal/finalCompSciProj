@@ -5,7 +5,6 @@ from csv import writer
 # Tkinter imports
 from tkinter import *
 from tkinter import ttk
-
 from PIL import ImageTk, Image
 
 # General ML imports
@@ -378,35 +377,6 @@ def diagnosePatient(patientHealthList, oldpeak, slope, ca, thal):
     patientHealthList.append(neuralNetworks(patientHealthList))
     addPatient(patientHealthList)
 
-def changePatientPage(usr):
-    clearPage()
-    framechangePatient = Frame(frameMain)
-    framechangePatient.pack(fill="both", expand=True)
-
-    patientSel = StringVar(framechangePatient)
-    patientSel.set("Patient: ")
-    patientList = []
-    for item in collectPatients(usr):
-        patientList.append(item[0])
-    if not patientList:
-        errorLabel = Label(framechangePatient, text="You have no patients to change")
-        errorLabel.pack()
-    else:
-        patientSel = StringVar(framechangePatient)
-        patientSel.set("Patient: ")
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientList, command=lambda x: displayInfo(framechangePatient,patientSel.get()))
-        patientMenu.pack()
-        patientDisplay=Label(framechangePatient, font="Calibri,12,bold")
-        patientDisplay.pack(padx=20, pady=20)
-
-def displayInfo(frame,patientSel):
-    with open("patientDatabase.csv", 'r') as file:
-        csv_reader = csv.reader(file)
-        for row in csv_reader:
-            if row[1] == patientSel:
-                infoList = row[2:]
-                for item in infoList:
-                    button = Button(frame)
 
 def addPatient(list):
     with open("patientDatabase.csv", 'a', newline="") as file:
