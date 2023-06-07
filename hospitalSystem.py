@@ -538,156 +538,159 @@ def displayLabel(doctor, patient, frame):
 
 def changeInfo(doctor, patient, frame, display, button):
     selected = display.focus()
-    temp = display.item(selected, 'values')
-    factor = temp[0]
-    infoList = infoListGen(doctor,patient)
-    if factor == "Age":
-        index = 1
-        ageLabel = Label(frame, text="Age:")
-        ageLabel.pack()
-        ageSP = Spinbox(frame, from_=0, to=100,)
-        ageSP.pack()
-        newFactorVal = ageSP
-        widgets = [ageSP, ageLabel, button, display]
-    elif factor == "Sex":
-        index = 2
-        sexSel = IntVar(frame)
-        sexLabel = Label(frame, text="Sex:")
-        sexLabel.pack()
-        sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0)
-        sexOptionZero.pack()
-        sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
-        sexOptionOne.pack()
-        newFactorVal = sexSel
-        widgets = [sexLabel,sexOptionOne,sexOptionZero, button , display]
-    elif factor == "CP":
-        index = 3
-        cptSel = IntVar(frame)
-        cptLabel = Label(frame, text="Chest pain level:")
-        cptLabel.pack()
-        cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
-        cptOptionZero.pack()
-        cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
-        cptOptionOne.pack()
-        cptOptionTwo = Radiobutton(frame, text="2", variable=cptSel, value= 2)
-        cptOptionTwo.pack()
-        cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
-        cptOptionThree.pack()
-        newFactorVal = cptSel
-        widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree, button, display]
-    elif factor == "TrestBPS":
-        index = 4
-        bpsLabel = Label(frame, text="Resting Blood Pressure:")
-        bpsLabel.pack()
-        bpsSP = Spinbox(frame, from_=0, to=100)
-        bpsSP.pack()
-        newFactorVal = bpsSP
-        widgets = [bpsLabel, bpsSP, button, display]
-    elif factor == "Chol":
-        index = 5
-        cholLabel = Label(frame, text="Cholesterol Level:")
-        cholLabel.pack()
-        cholSP = Spinbox(frame, from_=0, to=250)
-        cholSP.pack()
-        newFactorVal = cholSP
-        widgets = [cholLabel, cholSP, button, display]
-    elif factor == "FBS":
-        index = 6
-        fbpsSel = StringVar(frame)
-        fbpsPatient = Label(frame, text="Fasting Blood Sugar:")
-        fbpsPatient.pack()
-        fbsOptionZero = Radiobutton(frame, text="0", variable=fbpsSel, value= 0)
-        fbsOptionZero.pack()
-        fbsOptionOne = Radiobutton(frame, text="1", variable=fbpsSel, value= 1)
-        fbsOptionOne.pack()
-        newFactorVal = fbpsSel
-        widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero, button, display]
-    elif factor == "RestECG":
-        index = 7
-        restecgSel = StringVar(frame)
-        restecgPatient = Label(frame, text="Resting ECG Result:")
-        restecgPatient.pack()
-        restecgOptionZero = Radiobutton(frame, text="0", variable=restecgSel, value= 0)
-        restecgOptionZero.pack()
-        restecgOptionOne = Radiobutton(frame, text="1", variable=restecgSel, value= 1)
-        restecgOptionOne.pack()
-        restecgOptionTwo = Radiobutton(frame, text="2", variable=restecgSel, value= 2)
-        restecgOptionTwo.pack()
-        newFactorVal = restecgSel
-        widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo, button, display]
-    elif factor == "Thalach":
-        index = 8
-        thalachLabel = Label(frame, text="Max. Heart Rate Achieved:")
-        thalachLabel.pack()
-        thalachSP = Spinbox(frame, from_=40, to=250)
-        thalachSP.pack()  
-        newFactorVal = thalachSP
-        widgets = [thalachLabel, thalachSP, button, display]     
-    elif factor == 'Exang':
-        index = 9
-        exangSel = StringVar(frame)
-        exangLabel = Label(frame, text="excercise induced angia:")
-        exangLabel.pack()
-        exangOptionOne = Radiobutton(frame, text="Yes", variable=exangSel, value= 1)
-        exangOptionOne.pack()
-        exangOptionZero = Radiobutton(frame, text="No", variable=exangSel, value= 0)
-        exangOptionZero.pack(side='left')
-        newFactorVal = exangSel
-        widgets = [exangLabel, exangOptionOne,exangOptionZero, button, display]
- 
-    elif factor == 'OldPeak':
-        index = 10
-        oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
-        oldpeakPatient.pack()
-        oldpeakSP = Spinbox(frame, from_=0, to=6,increment= 0.1)
-        oldpeakSP.pack()
-        newFactorVal = oldpeakSP
-        widgets = [oldpeakPatient,oldpeakSP,display,button]
-    elif factor == 'Slope':
-        index = 11
-        slopeSel = StringVar(frame)
-        slopePatient = Label(frame, text="Slope:")
-        slopePatient.pack()
-        slopeOptionZero = Radiobutton(frame, text="0", variable=slopeSel, value= 0)
-        slopeOptionZero.pack()
-        slopeOptionOne = Radiobutton(frame, text="1", variable=slopeSel, value= 1)
-        slopeOptionOne.pack()
-        slopeOptionTwo = Radiobutton(frame, text="2", variable=slopeSel, value= 2)
-        slopeOptionTwo.pack()
-        newFactorVal = slopeSel
-        widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo, display, button]
-    elif factor == 'CA':
-        index = 12
-        caSel = StringVar(frame)
-        caPatient = Label(frame, text="Num of vessels coloured by floroscopy:")
-        caPatient.pack()
-        caOptionZero = Radiobutton(frame, text="0", variable=caSel, value= 0)
-        caOptionZero.pack()
-        caOptionOne = Radiobutton(frame, text="1", variable=caSel, value= 1)
-        caOptionOne.pack()
-        caOptionTwo = Radiobutton(frame, text="2", variable=caSel, value= 2)
-        caOptionTwo.pack()
-        caOptionThree = Radiobutton(frame, text="3", variable=caSel, value= 3)
-        caOptionThree.pack()
-        newFactorVal = caSel
-        widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree, display,button]
-    elif factor == "Thal":
-        index = 13
-        thalSel = StringVar(frame)
-        thalPatient = Label(frame, text="thal:")
-        thalPatient.pack()
-        thalOptionOne = Radiobutton(frame, text="normal", variable=thalSel, value= 1)
-        thalOptionOne.pack()
-        thalOptionTwo = Radiobutton(frame, text="fixed defect", variable=thalSel, value= 2)
-        thalOptionTwo.pack()
-        thalOptionThree = Radiobutton(frame, text="reversable defect", variable=thalSel, value= 3)
-        thalOptionThree.pack()
-        newFactorVal = thalSel
-        widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree]
+    if selected == '':
+        print ("select something")
+    else:
+        temp = display.item(selected, 'values')
+        factor = temp[0]
+        infoList = infoListGen(doctor,patient)
+        if factor == "Age":
+            index = 1
+            ageLabel = Label(frame, text="Age:")
+            ageLabel.pack()
+            ageSP = Spinbox(frame, from_=0, to=100,)
+            ageSP.pack()
+            newFactorVal = ageSP
+            widgets = [ageSP, ageLabel, button, display]
+        elif factor == "Sex":
+            index = 2
+            sexSel = IntVar(frame)
+            sexLabel = Label(frame, text="Sex:")
+            sexLabel.pack()
+            sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0)
+            sexOptionZero.pack()
+            sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
+            sexOptionOne.pack()
+            newFactorVal = sexSel
+            widgets = [sexLabel,sexOptionOne,sexOptionZero, button , display]
+        elif factor == "CP":
+            index = 3
+            cptSel = IntVar(frame)
+            cptLabel = Label(frame, text="Chest pain level:")
+            cptLabel.pack()
+            cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
+            cptOptionZero.pack()
+            cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
+            cptOptionOne.pack()
+            cptOptionTwo = Radiobutton(frame, text="2", variable=cptSel, value= 2)
+            cptOptionTwo.pack()
+            cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
+            cptOptionThree.pack()
+            newFactorVal = cptSel
+            widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree, button, display]
+        elif factor == "TrestBPS":
+            index = 4
+            bpsLabel = Label(frame, text="Resting Blood Pressure:")
+            bpsLabel.pack()
+            bpsSP = Spinbox(frame, from_=0, to=100)
+            bpsSP.pack()
+            newFactorVal = bpsSP
+            widgets = [bpsLabel, bpsSP, button, display]
+        elif factor == "Chol":
+            index = 5
+            cholLabel = Label(frame, text="Cholesterol Level:")
+            cholLabel.pack()
+            cholSP = Spinbox(frame, from_=0, to=250)
+            cholSP.pack()
+            newFactorVal = cholSP
+            widgets = [cholLabel, cholSP, button, display]
+        elif factor == "FBS":
+            index = 6
+            fbpsSel = StringVar(frame)
+            fbpsPatient = Label(frame, text="Fasting Blood Sugar:")
+            fbpsPatient.pack()
+            fbsOptionZero = Radiobutton(frame, text="0", variable=fbpsSel, value= 0)
+            fbsOptionZero.pack()
+            fbsOptionOne = Radiobutton(frame, text="1", variable=fbpsSel, value= 1)
+            fbsOptionOne.pack()
+            newFactorVal = fbpsSel
+            widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero, button, display]
+        elif factor == "RestECG":
+            index = 7
+            restecgSel = StringVar(frame)
+            restecgPatient = Label(frame, text="Resting ECG Result:")
+            restecgPatient.pack()
+            restecgOptionZero = Radiobutton(frame, text="0", variable=restecgSel, value= 0)
+            restecgOptionZero.pack()
+            restecgOptionOne = Radiobutton(frame, text="1", variable=restecgSel, value= 1)
+            restecgOptionOne.pack()
+            restecgOptionTwo = Radiobutton(frame, text="2", variable=restecgSel, value= 2)
+            restecgOptionTwo.pack()
+            newFactorVal = restecgSel
+            widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo, button, display]
+        elif factor == "Thalach":
+            index = 8
+            thalachLabel = Label(frame, text="Max. Heart Rate Achieved:")
+            thalachLabel.pack()
+            thalachSP = Spinbox(frame, from_=40, to=250)
+            thalachSP.pack()  
+            newFactorVal = thalachSP
+            widgets = [thalachLabel, thalachSP, button, display]     
+        elif factor == 'Exang':
+            index = 9
+            exangSel = StringVar(frame)
+            exangLabel = Label(frame, text="excercise induced angia:")
+            exangLabel.pack()
+            exangOptionOne = Radiobutton(frame, text="Yes", variable=exangSel, value= 1)
+            exangOptionOne.pack()
+            exangOptionZero = Radiobutton(frame, text="No", variable=exangSel, value= 0)
+            exangOptionZero.pack(side='left')
+            newFactorVal = exangSel
+            widgets = [exangLabel, exangOptionOne,exangOptionZero, button, display]
+    
+        elif factor == 'OldPeak':
+            index = 10
+            oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
+            oldpeakPatient.pack()
+            oldpeakSP = Spinbox(frame, from_=0, to=6,increment= 0.1)
+            oldpeakSP.pack()
+            newFactorVal = oldpeakSP
+            widgets = [oldpeakPatient,oldpeakSP,display,button]
+        elif factor == 'Slope':
+            index = 11
+            slopeSel = StringVar(frame)
+            slopePatient = Label(frame, text="Slope:")
+            slopePatient.pack()
+            slopeOptionZero = Radiobutton(frame, text="0", variable=slopeSel, value= 0)
+            slopeOptionZero.pack()
+            slopeOptionOne = Radiobutton(frame, text="1", variable=slopeSel, value= 1)
+            slopeOptionOne.pack()
+            slopeOptionTwo = Radiobutton(frame, text="2", variable=slopeSel, value= 2)
+            slopeOptionTwo.pack()
+            newFactorVal = slopeSel
+            widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo, display, button]
+        elif factor == 'CA':
+            index = 12
+            caSel = StringVar(frame)
+            caPatient = Label(frame, text="Num of vessels coloured by floroscopy:")
+            caPatient.pack()
+            caOptionZero = Radiobutton(frame, text="0", variable=caSel, value= 0)
+            caOptionZero.pack()
+            caOptionOne = Radiobutton(frame, text="1", variable=caSel, value= 1)
+            caOptionOne.pack()
+            caOptionTwo = Radiobutton(frame, text="2", variable=caSel, value= 2)
+            caOptionTwo.pack()
+            caOptionThree = Radiobutton(frame, text="3", variable=caSel, value= 3)
+            caOptionThree.pack()
+            newFactorVal = caSel
+            widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree, display,button]
+        elif factor == "Thal":
+            index = 13
+            thalSel = StringVar(frame)
+            thalPatient = Label(frame, text="thal:")
+            thalPatient.pack()
+            thalOptionOne = Radiobutton(frame, text="normal", variable=thalSel, value= 1)
+            thalOptionOne.pack()
+            thalOptionTwo = Radiobutton(frame, text="fixed defect", variable=thalSel, value= 2)
+            thalOptionTwo.pack()
+            thalOptionThree = Radiobutton(frame, text="reversable defect", variable=thalSel, value= 3)
+            thalOptionThree.pack()
+            newFactorVal = thalSel
+            widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree]
 
 
-    saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton))
-    saveButton.pack()
+        saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton))
+        saveButton.pack()
 
 def hideMe(widgets,button):
     for item in widgets:
