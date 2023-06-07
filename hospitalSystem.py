@@ -384,7 +384,7 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         print("Error")
         
 def validatePatientData(patientInfoList):
-    for item in patientInfoList[2:]:
+    for item in patientInfoList[2:]: # why is this nesscary
         if isinstance(item, str):
             if item.isdigit() == True or isfloat(item) == True:
                 continue
@@ -477,13 +477,6 @@ def changePatientPage(usr):
     framechangePatient = Frame(frameMain)
     framechangePatient.pack(fill="both", expand=True)
 
-    # creates list of factors that doctors can select from to change
-    with open('patientDatabase.csv', 'r') as file:
-        csv_reader = csv.reader(file)
-        for row in csv_reader:
-            if row[0] == 'doctor':
-                factors = row[2:15]
-
     # creates list of patients that doctors can select
     patientSel = StringVar(framechangePatient)
     patientSel.set("Patient: ")
@@ -505,36 +498,58 @@ def changePatientPage(usr):
         patientSel.set("Patient: ")
         # once selected, display current information
         patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(usr, patientSel.get(), framechangePatient))
-        patientMenu.pack(side='left')
-        # option menu for factors to select from to change
-        factorSel = StringVar(framechangePatient)
-        factorSel.set("Factor: ")
-
-        factorMenu = OptionMenu(framechangePatient, factorSel,*factors, command = lambda x: changeInfo(usr,patientSel.get(), framechangePatient,factorSel.get() ))
-        factorMenu.pack(side='right')
+        patientMenu.pack()
 
 def infoListGen(doctor, patient):
     for item in collectPatients(doctor):
         if item[0] == patient:
-            infoList = item[:14]
+            infoList = item
     return infoList
     
 
 def displayLabel(doctor, patient, frame):
-        currentLabel = Label(frame, text= infoListGen(doctor,patient))
-        currentLabel.pack(side='bottom')
-
-def changeInfo(doctor, patient, frame, factor):
+    factors = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
     infoList = infoListGen(doctor,patient)
-    if factor == "age":
+    tree = ttk.Treeview(frame)
+
+        # Define the columns for the table
+    columns = ['Factors', 'Value']
+
+        # Configure the Treeview columns
+    tree["columns"] = columns
+    tree.heading("#0", text="Index")
+    tree.column("#0", width=80)
+
+        # Configure each column
+    column_width = 80  # Adjust this value as desired
+    for column in columns:
+        tree.heading(column, text=column)
+        tree.column(column, width=column_width)
+    for i in range (15):
+        newList = [factors[i], infoList[i]]
+        # Insert data into the Treeview
+        tree.insert('', 'end', values=newList)
+
+        # Pack and display the Treeview
+    tree.pack()
+    changeButton = Button(frame,text="Change", command=lambda: changeInfo(doctor, patient, frame, tree, changeButton))
+    changeButton.pack()
+
+
+def changeInfo(doctor, patient, frame, display, button):
+    selected = display.focus()
+    temp = display.item(selected, 'values')
+    factor = temp[0]
+    infoList = infoListGen(doctor,patient)
+    if factor == "Age":
         index = 1
         ageLabel = Label(frame, text="Age:")
         ageLabel.pack()
         ageSP = Spinbox(frame, from_=0, to=100,)
         ageSP.pack()
         newFactorVal = ageSP
-        widgets = [ageSP, ageLabel]
-    elif factor == "sex":
+        widgets = [ageSP, ageLabel, button, display]
+    elif factor == "Sex":
         index = 2
         sexSel = IntVar(frame)
         sexLabel = Label(frame, text="Sex:")
@@ -544,8 +559,8 @@ def changeInfo(doctor, patient, frame, factor):
         sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
         sexOptionOne.pack()
         newFactorVal = sexSel
-        widgets = [sexLabel,sexOptionOne,sexOptionZero]
-    elif factor == "cp":
+        widgets = [sexLabel,sexOptionOne,sexOptionZero, button , display]
+    elif factor == "CP":
         index = 3
         cptSel = IntVar(frame)
         cptLabel = Label(frame, text="Chest pain level:")
@@ -559,7 +574,116 @@ def changeInfo(doctor, patient, frame, factor):
         cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
         cptOptionThree.pack()
         newFactorVal = cptSel
-        widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
+        widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree, button, display]
+    elif factor == "TrestBPS":
+        index = 4
+        bpsLabel = Label(frame, text="Resting Blood Pressure:")
+        bpsLabel.pack()
+        bpsSP = Spinbox(frame, from_=0, to=100)
+        bpsSP.pack()
+        newFactorVal = bpsSP
+        widgets = [bpsLabel, bpsSP, button, display]
+    elif factor == "Chol":
+        index = 5
+        cholLabel = Label(frame, text="Cholesterol Level:")
+        cholLabel.pack()
+        cholSP = Spinbox(frame, from_=0, to=250)
+        cholSP.pack()
+        newFactorVal = cholSP
+        widgets = [cholLabel, cholSP, button, display]
+    elif factor == "FBS":
+        index = 6
+        fbpsSel = StringVar(frame)
+        fbpsPatient = Label(frame, text="Fasting Blood Sugar:")
+        fbpsPatient.pack()
+        fbsOptionZero = Radiobutton(frame, text="0", variable=fbpsSel, value= 0)
+        fbsOptionZero.pack()
+        fbsOptionOne = Radiobutton(frame, text="1", variable=fbpsSel, value= 1)
+        fbsOptionOne.pack()
+        newFactorVal = fbpsSel
+        widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero, button, display]
+    elif factor == "RestECG":
+        index = 7
+        restecgSel = StringVar(frame)
+        restecgPatient = Label(frame, text="Resting ECG Result:")
+        restecgPatient.pack()
+        restecgOptionZero = Radiobutton(frame, text="0", variable=restecgSel, value= 0)
+        restecgOptionZero.pack()
+        restecgOptionOne = Radiobutton(frame, text="1", variable=restecgSel, value= 1)
+        restecgOptionOne.pack()
+        restecgOptionTwo = Radiobutton(frame, text="2", variable=restecgSel, value= 2)
+        restecgOptionTwo.pack()
+        newFactorVal = restecgSel
+        widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo, button, display]
+    elif factor == "Thalach":
+        index = 8
+        thalachLabel = Label(frame, text="Max. Heart Rate Achieved:")
+        thalachLabel.pack()
+        thalachSP = Spinbox(frame, from_=40, to=250)
+        thalachSP.pack()  
+        newFactorVal = thalachSP
+        widgets = [thalachLabel, thalachSP, button, display]     
+    elif factor == 'Exang':
+        index = 9
+        exangSel = StringVar(frame)
+        exangLabel = Label(frame, text="excercise induced angia:")
+        exangLabel.pack()
+        exangOptionOne = Radiobutton(frame, text="Yes", variable=exangSel, value= 1)
+        exangOptionOne.pack()
+        exangOptionZero = Radiobutton(frame, text="No", variable=exangSel, value= 0)
+        exangOptionZero.pack(side='left')
+        newFactorVal = exangSel
+        widgets = [exangLabel, exangOptionOne,exangOptionZero, button, display]
+ 
+    elif factor == 'OldPeak':
+        index = 10
+        oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
+        oldpeakPatient.pack()
+        oldpeakSP = Spinbox(frame, from_=0, to=6,increment= 0.1)
+        oldpeakSP.pack()
+        newFactorVal = oldpeakSP
+        widgets = [oldpeakPatient,oldpeakSP,display,button]
+    elif factor == 'Slope':
+        index = 11
+        slopeSel = StringVar(frame)
+        slopePatient = Label(frame, text="Slope:")
+        slopePatient.pack()
+        slopeOptionZero = Radiobutton(frame, text="0", variable=slopeSel, value= 0)
+        slopeOptionZero.pack()
+        slopeOptionOne = Radiobutton(frame, text="1", variable=slopeSel, value= 1)
+        slopeOptionOne.pack()
+        slopeOptionTwo = Radiobutton(frame, text="2", variable=slopeSel, value= 2)
+        slopeOptionTwo.pack()
+        newFactorVal = slopeSel
+        widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo, display, button]
+    elif factor == 'CA':
+        index = 12
+        caSel = StringVar(frame)
+        caPatient = Label(frame, text="Num of vessels coloured by floroscopy:")
+        caPatient.pack()
+        caOptionZero = Radiobutton(frame, text="0", variable=caSel, value= 0)
+        caOptionZero.pack()
+        caOptionOne = Radiobutton(frame, text="1", variable=caSel, value= 1)
+        caOptionOne.pack()
+        caOptionTwo = Radiobutton(frame, text="2", variable=caSel, value= 2)
+        caOptionTwo.pack()
+        caOptionThree = Radiobutton(frame, text="3", variable=caSel, value= 3)
+        caOptionThree.pack()
+        newFactorVal = caSel
+        widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree, display,button]
+    elif factor == "Thal":
+        index = 13
+        thalSel = StringVar(frame)
+        thalPatient = Label(frame, text="thal:")
+        thalPatient.pack()
+        thalOptionOne = Radiobutton(frame, text="normal", variable=thalSel, value= 1)
+        thalOptionOne.pack()
+        thalOptionTwo = Radiobutton(frame, text="fixed defect", variable=thalSel, value= 2)
+        thalOptionTwo.pack()
+        thalOptionThree = Radiobutton(frame, text="reversable defect", variable=thalSel, value= 3)
+        thalOptionThree.pack()
+        newFactorVal = thalSel
+        widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree]
 
 
     saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton))
@@ -570,19 +694,18 @@ def hideMe(widgets,button):
         item.pack_forget()
     button.pack_forget()
 
-def saveInfo(doctor, patient, frame, factor, index, list, widgets, button):
-        hideMe(widgets, button)
-        list[index] = factor
-        newList= [doctor, patient]
-        for item in list[1:]:
-            newList.append(float(item))
-        print("New list:", newList)
-        newList.append(neuralNetworks(newList))
-        print("With new prediction:", newList)
+def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton):
+    list[index] = factor
+    newList= [doctor]
+    for item in list:
+        newList.append(item)
+    if validatePatientData(newList[:15]) == True:
+        hideMe(widgets, saveButton)
+        newList[15] = (neuralNetworks(newList))
         changePatient(newList)
-        print("Change sucessful")
-
         displayLabel(doctor, patient, frame)
+    else:
+        print("error")
 
 def addPatient(list):
     with open("patientDatabase.csv", 'a', newline="") as file:
