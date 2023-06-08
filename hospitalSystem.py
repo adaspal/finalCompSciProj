@@ -122,14 +122,16 @@ def homePage(usr):
     homeLabel = Label(frameHome, text=f"Welcome " + usr, font=('Helvetica', 36, "bold"))
     homeLabel.pack()
 
-    viewButton = Button(frameHome, text="View patient", fg='blue', command=lambda: viewPatientPage(usr))
-    viewButton.pack(pady=40)
-    addButton = Button(frameHome, text="Add patient", fg='blue', command=lambda: addPatientPage(usr))
-    addButton.pack(pady=40)
-    changeButton = Button(frameHome, text="Change patient", fg='blue', command=lambda: changePatientPage(usr))
-    changeButton.pack(pady=40)
+    viewButton = Button(frameHome, text="View Patient", fg='blue', command=lambda: viewPatientPage(usr))
+    viewButton.pack(pady=20)
+    addButton = Button(frameHome, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+    addButton.pack(pady=20)
+    changeButton = Button(frameHome, text="Change Patient", fg='blue', command=lambda: changePatientPage(usr))
+    changeButton.pack(pady=20)
+    graphButton = Button(frameHome, text="Graph Data", fg='blue', command=lambda: graphCall(usr))
+    graphButton.pack(pady=20)
     signOutButton = Button(frameHome, text="Sign Out", fg='blue', command=lambda: signOut())
-    signOutButton.pack(pady=40)
+    signOutButton.pack(pady=20)
     
 def signOut():
     #creating this function to run the login page makes the program more modular and easy to maintain
@@ -382,16 +384,42 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         saveButton.pack()
     else:
         print("Error")
-        
+      
 def validatePatientData(patientInfoList):
-    for item in patientInfoList[2:]: # why is this nesscary
+    i = 0
+    for item in patientInfoList[2:]:
         if isinstance(item, str):
             if item.isdigit() == True or isfloat(item) == True:
-                continue
+                if i == 0: #age
+                    if 0 < int(item) < 130:
+                        continue
+                    else:
+                        return False
+                if i == 3: #rbp
+                    if 50 < int(item) < 200:
+                        continue
+                    else:
+                        return False
+                if i == 4:
+                    if 0 < int(item) < 300:
+                        continue
+                    else:
+                        return False
+                if i == 7:
+                    if 50 < int(item) < 250:
+                        continue
+                    else:
+                        return False
+                if i == 9:
+                    if 0 < float(item) < 7:
+                        continue
+                    else:
+                        return False
             else:
                 return False
         else:
             continue
+        
     return True
 
 def isfloat(num):
@@ -738,6 +766,206 @@ def removeOldPatient(list):
     with open("patientDatabase.csv", 'w', newline="") as file:
        csv_writer = writer(file)
        csv_writer.writerows(patients)
+   
+def ageList(readPatientList):
+    valOne = 0
+    valTwo = 0
+    valThree = 0
+    valFour = 0
+    
+    for item in readPatientList:
+        print(item[1])
+        if 0 < int(item[1]) < 25:
+            valOne = valOne + 1
+        elif 26 < int(item[1]) < 50:
+            valTwo = valTwo + 1
+        elif 51 < int(item[1]) < 75:
+            valThree = valThree + 1
+        else:
+            valFour = valFour + 1
+    
+    agedict = {
+        "0-25": valOne,
+        "26-50": valTwo,
+        "51-75": valThree,
+        "76-100": valFour
+    }
+    return agedict
+
+def genderList(readPatientList):
+    valOne = 0
+    valTwo = 0
+            
+    for item in readPatientList:
+        if int(item[2]) == 1:
+            valOne = valOne + 1
+        else:
+            valTwo = valTwo + 1
+
+    genderdict = {
+        "male": valOne,
+        "female": valTwo
+    }
+    
+    return genderdict
+
+def cptList(readPatientList):
+    valOne = 0
+    valTwo = 0
+    valThree = 0
+    valFour = 0
+            
+    for item in readPatientList:
+        if int(item[3]) == 0:
+            valOne = valOne + 1
+        elif int(item[3]) == 1:
+            valTwo = valTwo + 1
+        elif int(item[3]) == 2:
+            valThree = valThree + 1
+        else:
+            valFour = valFour + 1
+    
+    cptdict = {
+        "0": valOne,
+        "1": valTwo,
+        "2": valThree,
+        "3": valFour
+    }
+    
+    return cptdict
+
+def rbpList(readPatientList):
+    valOne = 0
+    valTwo = 0
+    valThree = 0
+    valFour = 0
+    
+    for item in readPatientList:
+        if 40 < int(item[4]) < 80:
+            valOne = valOne + 1
+        elif 81 < int(item[4]) < 120:
+            valTwo = valTwo + 1
+        elif 121 < int(item[4]) < 160:
+            valThree = valThree + 1
+        else:
+            valFour = valFour + 1
+    
+    rbpdict = {
+        "40-80": valOne,
+        "81-120": valTwo,
+        "121-160": valThree,
+        "161-200": valFour
+    }
+    
+    return rbpdict
+     
+def graphMaker(feature, readPatientList):
+    if feature == "age":
+        dict = ageList(readPatientList)
+        # creating the dataset
+        keysList = list(dict.keys())
+        data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
+                keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
+        courses = list(data.keys())
+        values = list(data.values())
+        
+        fig = plt.figure(figsize = (10, 5))
+        
+        # creating the bar plot
+        plt.bar(courses, values, color ='blue',
+                width = 0.4)
+        
+        plt.xlabel("Age range (in years)")
+        plt.ylabel("Number of patients in the range with a YES diagnosis")
+        plt.title("Age Analysis Regarding Heart Disease")
+        plt.show()
+    
+    elif feature == "gender":
+        dict = genderList(readPatientList)
+        # creating the dataset
+        keysList = list(dict.keys())
+        data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1])}
+        courses = list(data.keys())
+        values = list(data.values())
+        
+        fig = plt.figure(figsize = (10, 5))
+        
+        # creating the bar plot
+        plt.bar(courses, values, color ='blue',
+                width = 0.4)
+        
+        plt.xlabel("Gender")
+        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.title("Gender Analysis Regarding Heart Disease")
+        plt.show()
+        
+    elif feature == "chest pain type":
+        dict = cptList(readPatientList)
+        # creating the dataset
+        keysList = list(dict.keys())
+        data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
+                keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
+        courses = list(data.keys())
+        values = list(data.values())
+        
+        fig = plt.figure(figsize = (10, 5))
+        
+        # creating the bar plot
+        plt.bar(courses, values, color ='blue',
+                width = 0.4)
+        
+        plt.xlabel("Chest Pain Type (0-Typical Angina, 1-Atypical Angina, 2-Nonanginal Pain, 3-Asymptomatic)")
+        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.title("Chest Pain Analysis Regarding Heart Disease")
+        plt.show()
+        
+    else:
+        dict = rbpList(readPatientList)
+        # creating the dataset
+        keysList = list(dict.keys())
+        data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
+                keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
+        courses = list(data.keys())
+        values = list(data.values())
+        
+        fig = plt.figure(figsize = (10, 5))
+        
+        # creating the bar plot
+        plt.bar(courses, values, color ='blue',
+                width = 0.4)
+        
+        plt.xlabel("Resting Blood Pressure (mmHg)")
+        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.title("Blood Pressure Analysis Regarding Heart Disease")
+        plt.show()
+        
+def graphCall(usr):
+    clearPage()
+    frameGraphPatientPage = Frame(frameMain)
+    frameGraphPatientPage.pack(fill="both", expand=True)
+
+    patientsList = collectPatients(usr)
+
+    if not patientsList:
+        errorLabel = Label(frameGraphPatientPage, text="You have no patients to graph")
+        errorLabel.pack()
+        addButton = Button(frameGraphPatientPage, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton.pack()
+    else:
+        graphLabel = Label(frameGraphPatientPage, text="Which feature would you like to plot?")
+        graphLabel.pack() 
+        
+        addButton = Button(frameGraphPatientPage, text="Age", fg='blue', command=lambda: graphMaker("age", patientsList))
+        addButton.pack()
+        
+        addButton = Button(frameGraphPatientPage, text="Gender", fg='blue', command=lambda: graphMaker("gender", patientsList))
+        addButton.pack()
+        
+        addButton = Button(frameGraphPatientPage, text="Chest Pain Type", fg='blue', command=lambda: graphMaker("chest pain type", patientsList))
+        addButton.pack()
+        
+        addButton = Button(frameGraphPatientPage, text="Resting Blood Pressure", fg='blue', command=lambda: graphMaker("rbp", patientsList))
+        addButton.pack()
     
 # Main Code
 win = Tk()
