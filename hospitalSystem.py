@@ -337,6 +337,7 @@ def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
 
 def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
     patientHealthList.extend([chol,fbs,restecg,thalach,exang])
+    print(patientHealthList)
     if validatePatientData(patientHealthList) == True:
         clearPage()
         frameaddPatientPageThree = Frame(frameMain)
@@ -383,34 +384,44 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         saveButton = Button(frameaddPatientPageThree, text="Save", fg='blue', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
         saveButton.pack()
     else:
+        patientHealthList.pop()
+        patientHealthList.pop()
+        patientHealthList.pop()
+        patientHealthList.pop()
+        patientHealthList.pop()
         print("Error")
       
 def validatePatientData(patientInfoList):
-    i = 0
-    for item in patientInfoList[2:]:
+    print(enumerate(patientInfoList[2:]))
+    for index, item in enumerate(patientInfoList[2:]):
+        print(index, item)
         if isinstance(item, str):
+            print(item, "is a string")
             if item.isdigit() == True or isfloat(item) == True:
-                if i == 0: #age
+                print(item, "is a number or float")
+                if index == 0: #age
+                    print("age is validating", item)
                     if 0 < int(item) < 130:
                         continue
                     else:
                         return False
-                if i == 3: #rbp
+                if index == 3: #rbp
+                    print("rbp is validating", item)
                     if 50 < int(item) < 200:
                         continue
                     else:
                         return False
-                if i == 4:
+                if index == 4:
                     if 0 < int(item) < 300:
                         continue
                     else:
                         return False
-                if i == 7:
-                    if 50 < int(item) < 250:
+                if index == 7:
+                    if 40 < int(item) < 250:
                         continue
                     else:
                         return False
-                if i == 9:
+                if index == 9:
                     if 0 < float(item) < 7:
                         continue
                     else:
@@ -436,6 +447,10 @@ def diagnosePatient(patientHealthList, oldpeak, slope, ca, thal):
         patientHealthList.append(neuralNetworks(patientHealthList))
         addPatient(patientHealthList)
     else:
+        patientHealthList.pop()
+        patientHealthList.pop()
+        patientHealthList.pop()
+        patientHealthList.pop()        
         print("Error")
     
 def addPatient(list):
