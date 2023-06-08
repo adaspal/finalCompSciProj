@@ -396,7 +396,7 @@ def validatePatientData(patientInfoList):
                     else:
                         return False
                 if i == 3: #rbp
-                    if 0 < int(item) < 130:
+                    if 50 < int(item) < 200:
                         continue
                     else:
                         return False
