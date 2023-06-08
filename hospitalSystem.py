@@ -466,9 +466,9 @@ def neuralNetworks(list):
     prediction = nn.predict(features)
     prediction = prediction[0]
     if prediction == 0:
-        prediction = 'No'
+        prediction = 'Negetive'
     else:
-        prediction = 'Yes'
+        prediction = 'Positive'
     return prediction
 
 def changePatientPage(usr):
