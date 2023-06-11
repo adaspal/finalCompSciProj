@@ -76,7 +76,7 @@ def loginPage():
     loginButton = Button(frameLogin, text="Sign in", command=lambda: login(entryUsername.get(), entryPassword.get()))
     loginButton.pack(pady=25)
 
-    createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='blue', command=createAccountPage)
+    createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='#127ca1', command=createAccountPage) #background is a turquoise hexcode
     createAccountButton.pack()
 
     # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
@@ -96,7 +96,7 @@ def createAccountPage():
     logolabel.pack()
 
     loginLabel = Label(frameCreateAccount, text="New Account", font=('Helvetica', 36, "bold"))
-    loginLabel.pack(pady=30)  # padding from the top
+    loginLabel.pack(pady=20)  # padding from the top
 
     # Create input fields for username and password
     labelCreatedUsername = Label(frameCreateAccount, text="Username:")
@@ -110,27 +110,30 @@ def createAccountPage():
     entryCreatedPassword.pack()
 
     createAccountButton = Button(frameCreateAccount, text="Create Account", command=lambda: addNewAccount(entryCreatedUsername.get(), entryCreatedPassword.get()))
-    createAccountButton.pack(pady=25)
+    createAccountButton.pack(pady=20)
+
+    createBackButton = Button(frameCreateAccount, text="← Back", command=lambda: loginPage())
+    createBackButton.pack()
 
 def homePage(usr):
-    ''' Creates home page'''
+    ''' Creates home page''' 
     clearPage()
     # Create home page
     frameHome = Frame(frameMain)
     frameHome.pack(fill="both", expand=True)
 
-    homeLabel = Label(frameHome, text=f"Welcome " + usr, font=('Helvetica', 36, "bold"))
-    homeLabel.pack()
+    homeLabel = Label(frameHome, text=f"Welcome, " + usr, font=('Helvetica', 36, "bold"))
+    homeLabel.pack(pady=10)
 
-    viewButton = Button(frameHome, text="View Patient", fg='blue', command=lambda: viewPatientPage(usr))
+    viewButton = Button(frameHome, text="View Patient", fg='#127ca1', command=lambda: viewPatientPage(usr))
     viewButton.pack(pady=20)
-    addButton = Button(frameHome, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+    addButton = Button(frameHome, text="Add Patient", fg='#127ca1', command=lambda: addPatientPage(usr))
     addButton.pack(pady=20)
-    changeButton = Button(frameHome, text="Change Patient", fg='blue', command=lambda: changePatientPage(usr))
+    changeButton = Button(frameHome, text="Change Patient", fg='#127ca1', command=lambda: changePatientPage(usr))
     changeButton.pack(pady=20)
-    graphButton = Button(frameHome, text="Graph Data", fg='blue', command=lambda: graphCall(usr))
+    graphButton = Button(frameHome, text="Graph Data", fg='#127ca1', command=lambda: graphCall(usr))
     graphButton.pack(pady=20)
-    signOutButton = Button(frameHome, text="Sign Out", fg='blue', command=lambda: signOut())
+    signOutButton = Button(frameHome, text="Sign Out", fg='#127ca1', command=lambda: signOut())
     signOutButton.pack(pady=20)
     
 def signOut():
@@ -209,13 +212,13 @@ def viewPatientPage(usr):
     if not patientsList:
         errorLabel = Label(frameviewPatientPage, text="You have no patients to view")
         errorLabel.pack()
-        addButton = Button(frameviewPatientPage, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton = Button(frameviewPatientPage, text="Add Patient", fg='#127ca1', command=lambda: addPatientPage(usr))
         addButton.pack()
     else:
         tree = ttk.Treeview(frameviewPatientPage, xscrollcommand=True)
 
         # Define the columns for the table
-        columns = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
+        columns = ['Name', 'Age', 'Sex (F=0,M=1)', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
 
         # Configure the Treeview columns
         tree["columns"] = columns
@@ -239,6 +242,9 @@ def viewPatientPage(usr):
 
         # Pack and display the Treeview
         tree.pack()
+
+    createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
+    createBackButton.pack(pady=30)
 
 def addPatientPage(usr):
     clearPage()
@@ -279,8 +285,11 @@ def addPatientPage(usr):
     bpsSP = Spinbox(frameaddPatientPage, from_=0, to=100)
     bpsSP.pack()
 
-    nextButton = Button(frameaddPatientPage, text="Next", fg='blue', command=lambda: addPatientPageTwo(usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
+    nextButton = Button(frameaddPatientPage, text="Next", fg='#127ca1', command=lambda: addPatientPageTwo(usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
     nextButton.pack()
+
+    createBackButton = Button(frameaddPatientPage, text="Back", command=lambda: homePage(usr))
+    createBackButton.pack()
 
 
 def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
@@ -323,15 +332,18 @@ def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
         thalSP.pack()
 
         exangSel = StringVar(frameaddPatientPageTwo)
-        exangLabel = Label(frameaddPatientPageTwo, text="excercise induced angia:")
+        exangLabel = Label(frameaddPatientPageTwo, text="Excercise induced angia:")
         exangLabel.pack()
         exangOptionOne = Radiobutton(frameaddPatientPageTwo, text="Yes", variable=exangSel, value= 1)
         exangOptionOne.pack()
         exangOptionZero = Radiobutton(frameaddPatientPageTwo, text="No", variable=exangSel, value= 0)
         exangOptionZero.pack()
 
-        nextButton = Button(frameaddPatientPageTwo, text="Next", fg='blue', command=lambda: addPatientPageThree(patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
+        nextButton = Button(frameaddPatientPageTwo, text="Next", fg='#127ca1', command=lambda: addPatientPageThree(patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
         nextButton.pack()
+
+        createBackButton = Button(frameaddPatientPageTwo, text="Back", command=lambda: addPatientPage())
+        createBackButton.pack()
     else:
         print("Error")
 
@@ -381,8 +393,11 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         thalOptionThree.pack()
 
         
-        saveButton = Button(frameaddPatientPageThree, text="Save", fg='blue', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
+        saveButton = Button(frameaddPatientPageThree, text="Save", fg='#127ca1', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
         saveButton.pack()
+
+        createBackButton = Button(frameaddPatientPageThree, text="Back", command=lambda: addPatientPageTwo())
+        createBackButton.pack()
     else:
         patientHealthList.pop()
         patientHealthList.pop()
@@ -509,7 +524,7 @@ def neuralNetworks(list):
     prediction = nn.predict(features)
     prediction = prediction[0]
     if prediction == 0:
-        prediction = 'Negetive'
+        prediction = 'Negative'
     else:
         prediction = 'Positive'
     return prediction
@@ -530,10 +545,10 @@ def changePatientPage(usr):
     if not patientNameList:
         errorLabel = Label(framechangePatient, text="You have no patients to change.")
         errorLabel.pack()
-        addButton = Button(framechangePatient, text="Add patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton = Button(framechangePatient, text="Add patient", fg='#127ca1', command=lambda: addPatientPage(usr))
         addButton.pack(side='left')
-        homeButton = Button(framechangePatient,text="Home", command=lambda: homePage(usr))
-        homeButton.pack(side='right')
+        createBackButton = Button(framechangePatient,text="← Back", command=lambda: homePage(usr))
+        createBackButton.pack(side='right')
     else: # if doctor has patients
         # option menu for patients to select from
         patientSel = StringVar(framechangePatient)
@@ -541,8 +556,8 @@ def changePatientPage(usr):
         # once selected, display current information
         patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(usr, patientSel.get(), framechangePatient, patientMenu))
         patientMenu.pack()
-        homeButton = Button(framechangePatient,text="Home", command=lambda: homePage(usr))
-        homeButton.pack()
+        createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
+        createBackButton.pack(pady=30)
 
 
 def infoListGen(doctor, patient):
@@ -553,6 +568,11 @@ def infoListGen(doctor, patient):
     
 
 def displayLabel(doctor, patient, frame, menu):
+
+    selectLabel = Label(frame)
+    selectLabel.pack()
+    selectLabel.config(text="Select a factor to edit below:")
+
     menu.pack_forget()
     factors = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
     infoList = infoListGen(doctor,patient)
@@ -576,6 +596,7 @@ def displayLabel(doctor, patient, frame, menu):
         tree.insert('', 'end', text=i, values=newList)
 
         # Pack and display the Treeview
+    tree.configure(height=10)  # Adjust the height value as desired
     tree.pack()
     doneButton = Button(frame, text='Done', command=lambda: changePatientPage(doctor) )
     doneButton.pack()
@@ -586,7 +607,7 @@ def displayLabel(doctor, patient, frame, menu):
 def changeInfo(doctor, patient, frame, tree, changebutton, doneButton):
     selected = tree.focus()
     if selected == '':
-        print ("select something")
+        print("select something")
     else:
         temp = tree.item(selected, 'values')
         factor = temp[0]
@@ -688,7 +709,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, doneButton):
                 exangOptionZero.pack()
                 newFactorVal = exangSel
                 widgets = [exangLabel, exangOptionOne,exangOptionZero, doneButton]
-        
             elif factor == 'OldPeak':
                 index = 10
                 oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
@@ -739,7 +759,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, doneButton):
                 newFactorVal = thalSel
                 widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree, doneButton]
 
-            saveButton = Button(frame,text="save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton, tree))
+            saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton, tree))
             saveButton.pack()
 
 def hideMe(widgets,button):
@@ -887,11 +907,11 @@ def graphMaker(feature, readPatientList):
         fig = plt.figure(figsize = (10, 5))
         
         # creating the bar plot
-        plt.bar(courses, values, color ='blue',
+        plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
         plt.xlabel("Age range (in years)")
-        plt.ylabel("Number of patients in the range with a YES diagnosis")
+        plt.ylabel("Number of patients in the range with a POSITIVE diagnosis")
         plt.title("Age Analysis Regarding Heart Disease")
         plt.show()
     
@@ -906,11 +926,11 @@ def graphMaker(feature, readPatientList):
         fig = plt.figure(figsize = (10, 5))
         
         # creating the bar plot
-        plt.bar(courses, values, color ='blue',
+        plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
         plt.xlabel("Gender")
-        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Gender Analysis Regarding Heart Disease")
         plt.show()
         
@@ -926,11 +946,11 @@ def graphMaker(feature, readPatientList):
         fig = plt.figure(figsize = (10, 5))
         
         # creating the bar plot
-        plt.bar(courses, values, color ='blue',
+        plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
         plt.xlabel("Chest Pain Type (0-Typical Angina, 1-Atypical Angina, 2-Nonanginal Pain, 3-Asymptomatic)")
-        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Chest Pain Analysis Regarding Heart Disease")
         plt.show()
         
@@ -946,11 +966,11 @@ def graphMaker(feature, readPatientList):
         fig = plt.figure(figsize = (10, 5))
         
         # creating the bar plot
-        plt.bar(courses, values, color ='blue',
+        plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
         plt.xlabel("Resting Blood Pressure (mmHg)")
-        plt.ylabel("Number of patients with a YES diagnosis")
+        plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Blood Pressure Analysis Regarding Heart Disease")
         plt.show()
         
@@ -959,36 +979,47 @@ def graphCall(usr):
     frameGraphPatientPage = Frame(frameMain)
     frameGraphPatientPage.pack(fill="both", expand=True)
 
-    patientsList = collectPatients(usr)
+    totalList = collectPatients(usr)
+    patientsList = []
+    for item in totalList:
+        if item[-1] == "Positive":
+            patientsList.append(item)
+        else:
+            continue
 
-    if not patientsList:
+    if not totalList:
         errorLabel = Label(frameGraphPatientPage, text="You have no patients to graph")
         errorLabel.pack()
-        addButton = Button(frameGraphPatientPage, text="Add Patient", fg='blue', command=lambda: addPatientPage(usr))
+        addButton = Button(frameGraphPatientPage, text="Add Patient", fg='#127ca1', command=lambda: addPatientPage(usr))
         addButton.pack()
     else:
         graphLabel = Label(frameGraphPatientPage, text="Which feature would you like to plot?")
         graphLabel.pack() 
+
+        graphButtonWidth = 15
         
-        addButton = Button(frameGraphPatientPage, text="Age", fg='blue', command=lambda: graphMaker("age", patientsList))
-        addButton.pack()
+        addButton = Button(frameGraphPatientPage, text="Age", fg='#127ca1', width=graphButtonWidth, command=lambda: graphMaker("age", patientsList))
+        addButton.pack(pady=10)
         
-        addButton = Button(frameGraphPatientPage, text="Gender", fg='blue', command=lambda: graphMaker("gender", patientsList))
-        addButton.pack()
+        addButton = Button(frameGraphPatientPage, text="Gender", fg='#127ca1', width=graphButtonWidth, command=lambda: graphMaker("gender", patientsList))
+        addButton.pack(pady=10)
         
-        addButton = Button(frameGraphPatientPage, text="Chest Pain Type", fg='blue', command=lambda: graphMaker("chest pain type", patientsList))
-        addButton.pack()
+        addButton = Button(frameGraphPatientPage, text="Chest Pain Type", fg='#127ca1', width=graphButtonWidth, command=lambda: graphMaker("chest pain type", patientsList))
+        addButton.pack(pady=10)
         
-        addButton = Button(frameGraphPatientPage, text="Resting Blood Pressure", fg='blue', command=lambda: graphMaker("rbp", patientsList))
-        addButton.pack()
+        addButton = Button(frameGraphPatientPage, text="Resting Blood Pressure", fg='#127ca1', width=graphButtonWidth, command=lambda: graphMaker("rbp", patientsList))
+        addButton.pack(pady=10)
+
+        createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
+        createBackButton.pack(pady=30)
     
 # Main Code
 win = Tk()
 win.title("Hospital System")
 win.geometry("700x500")
 
-# Doesn't allow the screen to be resized
-win.resizable(0, 0)
+# Doesn't allow the screen to be resized:
+# win.resizable(0, 0)
 
 frameMain = Frame(win) #All other created frames are children of this frame, making them contained under frameMain
 frameMain.pack(expand=True, anchor="n") 
