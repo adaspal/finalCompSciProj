@@ -284,15 +284,16 @@ def addPatientPage(usr):
     bpsLabel.pack()
     bpsSP = Spinbox(frameaddPatientPage, from_=0, to=100)
     bpsSP.pack()
-
-    nextButton = Button(frameaddPatientPage, text="Next", fg='#127ca1', command=lambda: addPatientPageTwo(usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
+    addPatientErrorLabel = Label(frameaddPatientPage)
+    addPatientErrorLabel.pack()
+    nextButton = Button(frameaddPatientPage, text="Next", fg='#127ca1', command=lambda: addPatientPageTwo(addPatientErrorLabel, usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
     nextButton.pack()
 
     createBackButton = Button(frameaddPatientPage, text="Back", command=lambda: homePage(usr))
     createBackButton.pack()
 
 
-def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
+def addPatientPageTwo(label, doctor, patient, age, sex, cpt, rbp):
     if sex == "Male":
         sex = 1
     else: 
@@ -338,18 +339,22 @@ def addPatientPageTwo(doctor, patient, age, sex, cpt, rbp):
         exangOptionOne.pack()
         exangOptionZero = Radiobutton(frameaddPatientPageTwo, text="No", variable=exangSel, value= 0)
         exangOptionZero.pack()
-
-        nextButton = Button(frameaddPatientPageTwo, text="Next", fg='#127ca1', command=lambda: addPatientPageThree(patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
+        addPatientErrorLabel = Label(frameaddPatientPageTwo)
+        addPatientErrorLabel.pack()
+        nextButton = Button(frameaddPatientPageTwo, text="Next", fg='#127ca1', command=lambda: addPatientPageThree(addPatientErrorLabel, patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
         nextButton.pack()
 
-        createBackButton = Button(frameaddPatientPageTwo, text="Back", command=lambda: addPatientPage())
+        createBackButton = Button(frameaddPatientPageTwo, text="Back", command=lambda: addPatientPage(doctor))
         createBackButton.pack()
     else:
-        print("Error")
+        print("error")
+        label.config(text="Invalid / missing inputs.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
 
-def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
+        
+
+def addPatientPageThree(label, patientHealthList, chol,fbs,restecg,thalach,exang):
     patientHealthList.extend([chol,fbs,restecg,thalach,exang])
-    print(patientHealthList)
+    print("newList:", patientHealthList)
     if validatePatientData(patientHealthList) == True:
         clearPage()
         frameaddPatientPageThree = Frame(frameMain)
@@ -392,11 +397,12 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         thalOptionThree = Radiobutton(frameaddPatientPageThree, text="reversable defect", variable=thalSel, value= 3)
         thalOptionThree.pack()
 
-        
-        saveButton = Button(frameaddPatientPageThree, text="Save", fg='#127ca1', command=lambda: diagnosePatient(patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
+        addPatientErrorLabel = Label(frameaddPatientPageThree)
+        addPatientErrorLabel.pack()
+        saveButton = Button(frameaddPatientPageThree, text="Save", fg='#127ca1', command=lambda: diagnosePatient(addPatientErrorLabel,patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
         saveButton.pack()
 
-        createBackButton = Button(frameaddPatientPageThree, text="Back", command=lambda: addPatientPageTwo())
+        createBackButton = Button(frameaddPatientPageThree, text="Back", command=lambda: addPatientPageTwo(label, patientHealthList[0],  patientHealthList[1], patientHealthList[2], patientHealthList[3],  patientHealthList[4],  patientHealthList[5]))
         createBackButton.pack()
     else:
         patientHealthList.pop()
@@ -404,10 +410,10 @@ def addPatientPageThree(patientHealthList, chol,fbs,restecg,thalach,exang):
         patientHealthList.pop()
         patientHealthList.pop()
         patientHealthList.pop()
-        print("Error")
+        print("List after errors removed: ", patientHealthList)
+        label.config(text="Invalid / missing inputs.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
       
 def validatePatientData(patientInfoList):
-    print(enumerate(patientInfoList[2:]))
     for index, item in enumerate(patientInfoList[2:]):
         print(index, item)
         if isinstance(item, str):
@@ -416,28 +422,31 @@ def validatePatientData(patientInfoList):
                 print(item, "is a number or float")
                 if index == 0: #age
                     print("age is validating", item)
-                    if 0 < int(item) < 130:
+                    if 0 <= int(item) <= 130:
                         continue
                     else:
                         return False
                 if index == 3: #rbp
                     print("rbp is validating", item)
-                    if 50 < int(item) < 200:
+                    if 40 <= int(item) <= 200:
                         continue
                     else:
                         return False
-                if index == 4:
-                    if 0 < int(item) < 300:
+                if index == 4: #chol
+                    print("chol is validating", item)
+                    if 0 <= int(item) <= 300:
                         continue
                     else:
                         return False
-                if index == 7:
-                    if 40 < int(item) < 250:
+                if index == 7: #thacach
+                    print("thalach is validating", item)
+                    if 40 <= int(item) <= 250:
                         continue
                     else:
                         return False
-                if index == 9:
-                    if 0 < float(item) < 7:
+                if index == 9: #oldpeak
+                    print("oldpeak is validating", item)
+                    if 0 <= float(item) <= 7:
                         continue
                     else:
                         return False
@@ -455,18 +464,30 @@ def isfloat(num):
     except ValueError:
         return False
 
-def diagnosePatient(patientHealthList, oldpeak, slope, ca, thal):
+def diagnosePatient(label,patientHealthList, oldpeak, slope, ca, thal):
     patientHealthList.extend([oldpeak, slope, ca, thal])
     
     if validatePatientData(patientHealthList) == True:
         patientHealthList.append(neuralNetworks(patientHealthList))
         addPatient(patientHealthList)
+        clearPage()
+        framepatientDiagnosed = Frame(frameMain)
+        framepatientDiagnosed.pack(fill="both", expand=True)        
+        successLabel = Label(framepatientDiagnosed, text='Patient added sucessfully.')
+        successLabel.pack()
+        viewButton = Button(framepatientDiagnosed, text="View All Patients", fg='#127ca1', command=lambda: viewPatientPage(patientHealthList[0]))
+        viewButton.pack(pady=20)
+        addButton = Button(framepatientDiagnosed, text="Add Another Patient", fg='#127ca1', command=lambda: addPatientPage(patientHealthList[0]))
+        addButton.pack(pady=20)        
+        createBackButton = Button(framepatientDiagnosed, text="Back", command=lambda: homePage(patientHealthList[0]))
+        createBackButton.pack()       
     else:
         patientHealthList.pop()
         patientHealthList.pop()
         patientHealthList.pop()
         patientHealthList.pop()        
-        print("Error")
+        print("removed error list", patientHealthList)
+        label.config(text="Invalid / missing inputs.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
     
 def addPatient(list):
     with open("patientDatabase.csv", 'a', newline="") as file:
@@ -553,8 +574,10 @@ def changePatientPage(usr):
         # option menu for patients to select from
         patientSel = StringVar(framechangePatient)
         patientSel.set("Patient: ")
+        selectLabel = Label(framechangePatient)
+        selectLabel.pack()
         # once selected, display current information
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(usr, patientSel.get(), framechangePatient, patientMenu))
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(selectLabel,usr, patientSel.get(), framechangePatient, patientMenu))
         patientMenu.pack()
         createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
         createBackButton.pack(pady=30)
@@ -567,17 +590,14 @@ def infoListGen(doctor, patient):
     return infoList
     
 
-def displayLabel(doctor, patient, frame, menu):
-
-    selectLabel = Label(frame)
-    selectLabel.pack()
+def displayLabel(selectLabel, doctor, patient, frame, menu):
+    menu.pack_forget()
     selectLabel.config(text="Select a factor to edit below:")
 
-    menu.pack_forget()
+
     factors = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
     infoList = infoListGen(doctor,patient)
     tree = ttk.Treeview(frame)
-
         # Define the columns for the table
     columns = ['Factors', 'Value']
 
@@ -598,23 +618,27 @@ def displayLabel(doctor, patient, frame, menu):
         # Pack and display the Treeview
     tree.configure(height=10)  # Adjust the height value as desired
     tree.pack()
-    doneButton = Button(frame, text='Done', command=lambda: changePatientPage(doctor) )
+    doneButton = Button(frame, text='Select New Patient', command=lambda: changePatientPage(doctor) )
     doneButton.pack()
-    changeButton = Button(frame,text="Change", command=lambda: changeInfo(doctor, patient, frame, tree, changeButton, doneButton))
+    errorLabel = Label(frame)
+    errorLabel.pack()
+    changeButton = Button(frame,text="Change", command=lambda: changeInfo(selectLabel, doctor, patient, frame, tree, changeButton, doneButton, errorLabel))
     changeButton.pack()
 
 
-def changeInfo(doctor, patient, frame, tree, changebutton, doneButton):
+def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButton, label):
+    selectLabel.pack_forget()
     selected = tree.focus()
     if selected == '':
-        print("select something")
+        label.config(text="You have not selected anything",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
     else:
         temp = tree.item(selected, 'values')
         factor = temp[0]
         infoList = infoListGen(doctor,patient)
         if factor == "Name" or factor == "Diagnoses":
-            print("You cannot edit those.")
+            label.config(text="Factor cannot be edited.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
         else: 
+            label.pack_forget()
             changebutton.pack_forget()
             if factor == "Age":
                 index = 1
@@ -769,6 +793,10 @@ def hideMe(widgets,button):
 
 def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton, tree):
     list[index] = factor
+    selectLabel = Label(frame)
+    selectLabel.pack()
+    errorLabel = Label(frame)
+    errorLabel.pack()
     newList= [doctor]
     for item in list:
         newList.append(item)
@@ -776,9 +804,10 @@ def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton, t
         hideMe(widgets, saveButton)
         newList[15] = (neuralNetworks(newList))
         changePatient(newList)
-        displayLabel(doctor, patient, frame, tree)
+        displayLabel(selectLabel, doctor, patient, frame, tree)
     else:
         print("error")
+        errorLabel.config(text="Invalid Input",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
 
 def addPatient(list):
     with open("patientDatabase.csv", 'a', newline="") as file:
