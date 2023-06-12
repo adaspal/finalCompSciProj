@@ -11,25 +11,26 @@ from PIL import ImageTk, Image
 import os
 import gzip
 import numpy as np
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt     #For graphing
 from pylab import cm
 import warnings
 
+# Dataset imports for ML
 import pandas as pd
 import opendatasets as od
 import numpy as np
 
 warnings.filterwarnings("ignore")
 
-# scikit-learn imports
+# scikit-learn imports for ML
 from sklearn import datasets
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split   
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
-from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA           
 from sklearn.svm import SVC
 from sklearn.metrics import accuracy_score
 
-from sklearn.linear_model import LogisticRegression
+# Neural Networks import
 from sklearn.neural_network import MLPClassifier
 
 def clearPage():
@@ -433,54 +434,67 @@ def addPatientPageThree(label, patientHealthList, chol,fbs,restecg,thalach,exang
         label.config(text="Invalid / missing inputs.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
       
 def validatePatientData(patientInfoList):
+    '''
+    Returns a boolean that checks if the list features are valid and inside the boundaries
+    '''
+    # Iterate through list starting from index 2 to skip doctor and patient name
     for index, item in enumerate(patientInfoList[2:]):
-        print(index, item)
+        # Checks if the item in list is a string
         if isinstance(item, str):
-            print(item, "is a string")
+            # If the item is a string, then checks if the item consists of digits 
+            # or is a float (to confirm input is valid)
             if item.isdigit() == True or isfloat(item) == True:
-                print(item, "is a number or float")
-                if index == 0: #age
-                    print("age is validating", item)
+                # Through following if statements, checks which feature the list item is
+                # Item is then converted from string to int to then be compared to boundaries
+                # At any point if a list item is not valid, the function returns False
+                if index == 0: #age feature
+                    # Checks if age is a valid number
                     if 0 <= int(item) <= 130:
                         continue
                     else:
                         return False
-                if index == 3: #rbp
-                    print("rbp is validating", item)
+                if index == 3: #resting blood pressure feature
+                    # Checks if resting blood pressure is a valid number
                     if 40 <= int(item) <= 200:
                         continue
                     else:
                         return False
-                if index == 4: #chol
-                    print("chol is validating", item)
+                if index == 4: #cholesterol feature
+                    # Checks if cholesterol is a valid number
                     if 0 <= int(item) <= 300:
                         continue
                     else:
                         return False
-                if index == 7: #thacach
-                    print("thalach is validating", item)
+                if index == 7: # Max. Heart Rate achieved feature
+                    # Checks if max. heart rate achieved is a valid number
                     if 40 <= int(item) <= 250:
                         continue
                     else:
                         return False
-                if index == 9: #oldpeak
-                    print("oldpeak is validating", item)
+                if index == 9: #oldpeak feature
+                    # Checks if oldpeak feature is a valid number (this is a decimal so float)
                     if 0 <= float(item) <= 7:
                         continue
                     else:
                         return False
             else:
                 return False
+        # If the item is an int, then it must be an radio button thus it is valid for sure
         else:
             continue
-        
+    # If all list items are valid, function returns True    
     return True
 
 def isfloat(num):
+    '''
+    Returns boolean that checks whether or not passed string can be converted to a float
+    '''
     try:
+        # Attempts to convert to float, if possible then returns True
         float(num)
         return True
     except ValueError:
+        # If not possible to turn into float (throws exception), return False
         return False
 
 def diagnosePatient(label,patientHealthList, oldpeak, slope, ca, thal):
@@ -534,39 +548,54 @@ def addPatient(list):
 
 
 def neuralNetworks(list): 
+    '''
+    This function takes the patient list as parameter and runs the neural network (NN) on the data.
+    NN is a type of ML process, called deep learning, that uses interconnected nodes in a layered 
+    structure that resembles the human brain. Here we call the MLP classifier from scikit learn and
+    use NN as a black box.
+    Function returns a string prediction either "Positive" or "Negative"
+    '''
+    # Get data from csv file and read using pandas
     data = pd.read_csv('heart.csv')
 
-    # Split train data
+    # y is the target (diagnosis given in the dataset)
     y=data.target
+    # x are all the remaining features aside from the target (thus "drop" the target)
     x=data.drop('target',axis=1)
 
+    # Test size is set to 0.4 so 40% of the total dataset is used to test the model and 60%
+    # is used to train the NN model
     sample_train, sample_val, labels_train, labels_val = train_test_split(x,y,test_size=0.4, random_state=42)
 
+    # Use numpy to set variables to numpy
     sample_train = sample_train.to_numpy()
-
     sample_val = sample_val.to_numpy()
 
     # Standardize
     ss = StandardScaler()
     sample_train = ss.fit_transform(sample_train)
     sample_val = ss.transform(sample_val)
-    #sample_test = ss.transform(sample_test)
 
-    # Reduce dimensions 
+    # Set the dimension to 13; dimension rep. the # of fwatures that will be used to find the model
+    # We set it to the max. number (13 features) to maximize accuracy
     N_DIM = 13
+    # PCA is principal component analysis: sets dimension of the dataset and summarizes the data for NN
     pca = PCA(n_components=N_DIM)
     sample_train = pca.fit_transform(sample_train)
     sample_val = pca.transform(sample_val)
-    #sample_test = pca.transform(sample_test)
-
+    
+    # Initializes the neural network that will be run
     nn = MLPClassifier()
+    # Data fed into NN model and model is trained and tested (ready to be used for prediction)
     nn.fit(sample_train, labels_train)
+    # NN score calculated 
     nnScore = nn.score(sample_val, labels_val) * 100
     nnScore = round(nnScore, 2)
+    # prints NN score of model based on testing in the terminal
     print(f"NN test score: {nnScore}" + "%")
 
-
-    age = int(list[2])
+    # all the fwatures of the list are converted to ints and saved into variables named the feature
+    age = int(list[2])      # Starts from index 2 to skip doctor and patient names in list
     sex = int(list[3])
     cp = int(list[4])
     trestbps = int(list[5])
@@ -579,13 +608,17 @@ def neuralNetworks(list):
     slope = int(list[12])
     ca = int(list[13])
     thal = int(list[14])
+    # Creates numpy array with all the int variables
     features = np.array([[age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal]])
+    # Saves NN prediction calculated through features array into prediction variable
     prediction = nn.predict(features)
     prediction = prediction[0]
+    # Checks if prediction is negative (0) or positive (1) and saves diagnosis to predicton
     if prediction == 0:
         prediction = 'Negative'
     else:
         prediction = 'Positive'
+    # returns string prediction diagnosis
     return prediction
 
 def changePatientPage(usr):
@@ -899,54 +932,82 @@ def removeOldPatient(list):
        csv_writer.writerows(patients)
    
 def ageList(readPatientList):
+    '''
+    This function takes a list of patients that have a positive diagnosis and returns 
+    a dictionary of the number of people diagnosed positive in a specific age range
+    '''
+    # Sets all counters to 0
     valOne = 0
     valTwo = 0
     valThree = 0
     valFour = 0
     
+    # Iterates through positive patients list
     for item in readPatientList:
-        print(item[1])
+        # Converts first index (age) from string to int, then compares
         if 0 < int(item[1]) < 25:
+            # If age is from 0 to 25, first counter is increased by one
             valOne = valOne + 1
         elif 26 < int(item[1]) < 50:
+            # If age is from 26 to 50, second counter is increased by one
             valTwo = valTwo + 1
         elif 51 < int(item[1]) < 75:
+            # If age is from 51 to 75, third counter is increased by one
             valThree = valThree + 1
         else:
+            # If age is from 76 to 130, fourth counter is increased by one
             valFour = valFour + 1
     
+    # Dictionary of age range counters and keys with boundaries created
     agedict = {
         "0-25": valOne,
         "26-50": valTwo,
         "51-75": valThree,
         "76-100": valFour
     }
+    # Dictionary returned
     return agedict
 
 def genderList(readPatientList):
+    '''
+    This function takes a list of patients that have a positive diagnosis and returns 
+    a dictionary of the number of people diagnosed positive who are female or male
+    '''
+    # Set both counters to 0
     valOne = 0
     valTwo = 0
-            
+           
+    # Iterate through list 
     for item in readPatientList:
+        # Check if index 2 (gender) is 0 or 1, i.e. female or male
         if int(item[2]) == 1:
             valOne = valOne + 1
         else:
             valTwo = valTwo + 1
 
+    # Create dictionary of counters and gender names
     genderdict = {
         "male": valOne,
         "female": valTwo
     }
     
+    # Return gender dictionary
     return genderdict
 
 def cptList(readPatientList):
+    '''
+    This function takes a list of patients that have a positive diagnosis and returns 
+    a dictionary of the number of people diagnosed with a specific chest pain type
+    '''
+    # Sets counters to 0
     valOne = 0
     valTwo = 0
     valThree = 0
     valFour = 0
-            
+          
+    # Iterates through list  
     for item in readPatientList:
+        # Checks index 3 (type) and convert to int to increase counter
         if int(item[3]) == 0:
             valOne = valOne + 1
         elif int(item[3]) == 1:
@@ -956,6 +1017,7 @@ def cptList(readPatientList):
         else:
             valFour = valFour + 1
     
+    # Creates dict with counters and chest pain type label numbers
     cptdict = {
         "0": valOne,
         "1": valTwo,
@@ -963,15 +1025,24 @@ def cptList(readPatientList):
         "3": valFour
     }
     
+    # Returns dictionary
     return cptdict
 
 def rbpList(readPatientList):
+    '''
+    This function takes a list of patients that have a positive diagnosis and returns 
+    a dictionary of the number of people diagnosed positive in a specific resting blood pressure range
+    '''
+    # Set counters to 0
     valOne = 0
     valTwo = 0
     valThree = 0
     valFour = 0
     
+    # Iterate through list
     for item in readPatientList:
+        # Checks which resting blood pressure range each positive patient is in and add to
+        # associated counter
         if 40 < int(item[4]) < 80:
             valOne = valOne + 1
         elif 81 < int(item[4]) < 120:
@@ -981,6 +1052,7 @@ def rbpList(readPatientList):
         else:
             valFour = valFour + 1
     
+    # Creates dictionary with counters and range labels
     rbpdict = {
         "40-80": valOne,
         "81-120": valTwo,
@@ -988,32 +1060,43 @@ def rbpList(readPatientList):
         "161-200": valFour
     }
     
+    # Returns dictionary
     return rbpdict
      
 def graphMaker(feature, readPatientList):
+    '''
+    Takes string feature and positive patients list as input and has no return value.
+    Function creates a new window with a relevant graph. 
+    '''
+    # Checks if user selected age to be graphed
     if feature == "age":
+        # Gets dictionary for ages from ageList function
         dict = ageList(readPatientList)
-        # creating the dataset
+        # creating the dataset from dictionary
         keysList = list(dict.keys())
         data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
                 keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
         courses = list(data.keys())
         values = list(data.values())
         
+        # Creates figure
         fig = plt.figure(figsize = (10, 5))
         
         # creating the bar plot
         plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
+        # Set x and y axis labels
         plt.xlabel("Age range (in years)")
         plt.ylabel("Number of patients in the range with a POSITIVE diagnosis")
         plt.title("Age Analysis Regarding Heart Disease")
         plt.show()
     
     elif feature == "gender":
+        # Checks if user selected gender to be graphed
+        # Gets dictionary for gender from genderList function
         dict = genderList(readPatientList)
-        # creating the dataset
+        # creating the dataset fron dictionary
         keysList = list(dict.keys())
         data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1])}
         courses = list(data.keys())
@@ -1025,14 +1108,17 @@ def graphMaker(feature, readPatientList):
         plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
+        # Set x and y axis labels
         plt.xlabel("Gender")
         plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Gender Analysis Regarding Heart Disease")
         plt.show()
         
     elif feature == "chest pain type":
+        # Checks if user selected chest pain type to be graphed
+        # Gets dictionary for cpt from cptList function
         dict = cptList(readPatientList)
-        # creating the dataset
+        # creating the dataset from dictionary
         keysList = list(dict.keys())
         data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
                 keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
@@ -1045,14 +1131,17 @@ def graphMaker(feature, readPatientList):
         plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
+        # Set x and y axis labels
         plt.xlabel("Chest Pain Type (0-Typical Angina, 1-Atypical Angina, 2-Nonanginal Pain, 3-Asymptomatic)")
         plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Chest Pain Analysis Regarding Heart Disease")
         plt.show()
         
     else:
+        # Checks if user selected resting blood pressure to be graphed
+        # Gets dictionary for rbp from rbpList function
         dict = rbpList(readPatientList)
-        # creating the dataset
+        # creating the dataset from dict
         keysList = list(dict.keys())
         data = {keysList[0]:dict.get(keysList[0]), keysList[1]:dict.get(keysList[1]),
                 keysList[2]:dict.get(keysList[2]), keysList[3]:dict.get(keysList[3])}
@@ -1065,35 +1154,50 @@ def graphMaker(feature, readPatientList):
         plt.bar(courses, values, color ='#127ca1',
                 width = 0.4)
         
+        # Set x and y axis labels
         plt.xlabel("Resting Blood Pressure (mmHg)")
         plt.ylabel("Number of patients with a POSITIVE diagnosis")
         plt.title("Blood Pressure Analysis Regarding Heart Disease")
         plt.show()
         
 def graphCall(usr):
+    '''
+    This function is called to display graph page and evenutally call graphMaker for the graph
+    Takes doctor's name string as a parameter and no return values.
+    '''
+    # Clears previous page and sets new frame for graph page
     clearPage()
     frameGraphPatientPage = Frame(frameMain)
     frameGraphPatientPage.pack(fill="both", expand=True)
 
+    # Collects all patients that are under doctor name passed as parameter
     totalList = collectPatients(usr)
+    # Creates empty patient list that is to save all diagnosed positive patients
     patientsList = []
+    # Iterate through all patients
     for item in totalList:
+        # Check if diagnosis is positive, if so then append to positive patients list
         if item[-1] == "Positive":
             patientsList.append(item)
         else:
             continue
 
+    # If doctor have no patients then display relevant message and optiond
     if not totalList:
         errorLabel = Label(frameGraphPatientPage, text="You have no patients to graph")
         errorLabel.pack()
         addButton = Button(frameGraphPatientPage, text="Add Patient", fg='#127ca1', command=lambda: addPatientPage(usr))
         addButton.pack()
+    # If doctor has patients, then prompt user to input the feature they would like to graph
     else:
         graphLabel = Label(frameGraphPatientPage, text="Which feature would you like to plot?")
         graphLabel.pack() 
 
         graphButtonWidth = 15
         
+        # Each button for feature calls the graphMaker on click with the
+        # associated feature name as a string parameter and the positive patients list
+        # as another parameter.
         addButton = Button(frameGraphPatientPage, text="Age", fg='#127ca1', width=graphButtonWidth, command=lambda: graphMaker("age", patientsList))
         addButton.pack(pady=10)
         
