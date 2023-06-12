@@ -561,8 +561,6 @@ def changePatientPage(usr):
     framechangePatient.pack(fill="both", expand=True)
 
     # creates list of patients that doctors can select
-    patientSel = StringVar(framechangePatient)
-    patientSel.set("Patient: ")
     patientNameList = []
     for item in collectPatients(usr):
         patientNameList.append(item[0])
@@ -578,9 +576,7 @@ def changePatientPage(usr):
         # option menu for patients to select from
         patientSel = StringVar(framechangePatient)
         patientSel.set("Patient: ")
-        selectLabel = Label(framechangePatient)
-        selectLabel.pack()
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayChart(selectLabel,usr, patientSel.get(), framechangePatient, patientMenu))
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayChart(usr, patientSel.get()))
         patientMenu.pack()
         # back button to go back home
         createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
@@ -602,26 +598,21 @@ def infoListGen(doctor, patient):
     return infoList
     
 
-def displayChart(selectLabel, doctor, patient, frame, menu):
-    '''
-    Erases all uneeded widgets to only display chart of patient information that user can select from. 
-    Passes label to display tree title
-    Doctor and patient to display patient information
-    Frame for desired frame
-    Menu to delete either a) option menu so user cannot switch between patients unless cureent patient changes have been saved
-                          b) previous chart of patient data
-    '''
-    # erases menu or previous chart
-    menu.pack_forget()
+def displayChart(doctor, patient):
+    clearPage()
+    framedisplayChart = Frame(frameMain)
+    framedisplayChart.pack(fill="both", expand=True)   
 
     # configures title for chart
+    selectLabel = Label(framedisplayChart)
+    selectLabel.pack()
     selectLabel.config(text="Select a factor to edit below:")
 
     # creates list of factors that will be displayed
     factors = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
     # generates list of desired patient data to be displayed
     infoList = infoListGen(doctor,patient)
-    tree = ttk.Treeview(frame)
+    tree = ttk.Treeview(framedisplayChart)
         # Define the columns for the table
     columns = ['Factors', 'Value']
 
@@ -643,18 +634,17 @@ def displayChart(selectLabel, doctor, patient, frame, menu):
         # Pack and display the Treeview
     tree.configure(height=10)  # Adjust the height value as desired
     tree.pack()
-    # Allows user to go back and select another patient to change
-    doneButton = Button(frame, text='Select New Patient', command=lambda: changePatientPage(doctor) )
-    doneButton.pack()
     # creates error label to display different error messages
-    errorLabel = Label(frame)
+    errorLabel = Label(framedisplayChart)
     errorLabel.pack()
     # Allows user to change specific factor
-    changeButton = Button(frame,text="Change", command=lambda: changeInfo(selectLabel, doctor, patient, frame, tree, changeButton, doneButton, errorLabel))
+    changeButton = Button(framedisplayChart,text="Change", command=lambda: changeInfo(doctor, patient, framedisplayChart, tree, changeButton, errorLabel))
     changeButton.pack()
+    doneButton = Button(framedisplayChart, text='Select New Patient', command=lambda: changePatientPage(doctor) )
+    doneButton.pack()
 
 
-def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButton, errorlabel):
+def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
     '''
     Based on selection, function will display appropriate widgets to change a specific factor
     '''
@@ -668,10 +658,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
         if factor == "Name" or factor == "Diagnoses":
             errorlabel.config(text="Factor cannot be edited.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
         else: 
-            selectLabel.pack_forget()
             errorlabel.pack_forget()
-            errorLabel = Label()
-            errorLabel.pack()
             changebutton.pack_forget()
             if factor == "Age":
                 index = 1
@@ -680,7 +667,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 ageSP = Spinbox(frame, from_=0, to=100,)
                 ageSP.pack()
                 newFactorVal = ageSP
-                widgets = [ageSP, ageLabel, doneButton]
+                widgets = [ageSP, ageLabel]
             elif factor == "Sex":
                 index = 2
                 sexSel = IntVar(frame)
@@ -691,7 +678,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
                 sexOptionOne.pack()
                 newFactorVal = sexSel
-                widgets = [sexLabel,sexOptionOne,sexOptionZero, doneButton]
+                widgets = [sexLabel,sexOptionOne,sexOptionZero]
             elif factor == "CP":
                 index = 3
                 cptSel = IntVar(frame)
@@ -706,7 +693,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
                 cptOptionThree.pack()
                 newFactorVal = cptSel
-                widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree, doneButton]
+                widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
             elif factor == "TrestBPS":
                 index = 4
                 bpsLabel = Label(frame, text="Resting Blood Pressure:")
@@ -714,7 +701,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 bpsSP = Spinbox(frame, from_=0, to=100)
                 bpsSP.pack()
                 newFactorVal = bpsSP
-                widgets = [bpsLabel, bpsSP, doneButton]
+                widgets = [bpsLabel, bpsSP]
             elif factor == "Chol":
                 index = 5
                 cholLabel = Label(frame, text="Cholesterol Level:")
@@ -722,7 +709,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 cholSP = Spinbox(frame, from_=0, to=250)
                 cholSP.pack()
                 newFactorVal = cholSP
-                widgets = [cholLabel, cholSP, doneButton]
+                widgets = [cholLabel, cholSP]
             elif factor == "FBS":
                 index = 6
                 fbpsSel = StringVar(frame)
@@ -733,7 +720,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 fbsOptionOne = Radiobutton(frame, text="1", variable=fbpsSel, value= 1)
                 fbsOptionOne.pack()
                 newFactorVal = fbpsSel
-                widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero, doneButton]
+                widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero]
             elif factor == "RestECG":
                 index = 7
                 restecgSel = StringVar(frame)
@@ -746,7 +733,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 restecgOptionTwo = Radiobutton(frame, text="2", variable=restecgSel, value= 2)
                 restecgOptionTwo.pack()
                 newFactorVal = restecgSel
-                widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo, doneButton]
+                widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo]
             elif factor == "Thalach":
                 index = 8
                 thalachLabel = Label(frame, text="Max. Heart Rate Achieved:")
@@ -754,7 +741,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 thalachSP = Spinbox(frame, from_=40, to=250)
                 thalachSP.pack()  
                 newFactorVal = thalachSP
-                widgets = [thalachLabel, thalachSP, doneButton]     
+                widgets = [thalachLabel, thalachSP]     
             elif factor == 'Exang':
                 index = 9
                 exangSel = StringVar(frame)
@@ -765,7 +752,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 exangOptionZero = Radiobutton(frame, text="No", variable=exangSel, value= 0)
                 exangOptionZero.pack()
                 newFactorVal = exangSel
-                widgets = [exangLabel, exangOptionOne,exangOptionZero, doneButton]
+                widgets = [exangLabel, exangOptionOne,exangOptionZero]
             elif factor == 'OldPeak':
                 index = 10
                 oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
@@ -773,7 +760,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 oldpeakSP = Spinbox(frame, from_=0, to=6,increment= 0.1)
                 oldpeakSP.pack()
                 newFactorVal = oldpeakSP
-                widgets = [oldpeakPatient,oldpeakSP, doneButton]
+                widgets = [oldpeakPatient,oldpeakSP]
             elif factor == 'Slope':
                 index = 11
                 slopeSel = StringVar(frame)
@@ -786,7 +773,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 slopeOptionTwo = Radiobutton(frame, text="2", variable=slopeSel, value= 2)
                 slopeOptionTwo.pack()
                 newFactorVal = slopeSel
-                widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo, doneButton]
+                widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo]
             elif factor == 'CA':
                 index = 12
                 caSel = StringVar(frame)
@@ -801,7 +788,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 caOptionThree = Radiobutton(frame, text="3", variable=caSel, value= 3)
                 caOptionThree.pack(side='left')
                 newFactorVal = caSel
-                widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree, doneButton]
+                widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree]
             elif factor == "Thal":
                 index = 13
                 thalSel = StringVar(frame)
@@ -814,9 +801,10 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 thalOptionThree = Radiobutton(frame, text="reversable defect", variable=thalSel, value= 3)
                 thalOptionThree.pack()
                 newFactorVal = thalSel
-                widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree, doneButton]
-
-            saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton, tree, errorLabel))
+                widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree]
+            errorLabel = Label(frame)
+            errorLabel.pack()
+            saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, newFactorVal.get(), index, infoList, errorLabel))
             saveButton.pack()
 
 def hideMe(widgets,button):
@@ -824,19 +812,16 @@ def hideMe(widgets,button):
         item.pack_forget()
     button.pack_forget()
 
-def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton, tree, errorLabel):
+def saveInfo(doctor, patient, factor, index, list, errorLabel):
     list[index] = factor
-    selectLabel = Label(frame)
-    selectLabel.pack()
     newList= [doctor]
     for item in list:
         newList.append(item)
     if validatePatientData(newList[:15]) == True:
         errorLabel.pack_forget()
-        hideMe(widgets, saveButton)
         newList[15] = (neuralNetworks(newList))
         changePatient(newList)
-        displayChart(selectLabel, doctor, patient, frame, tree)
+        displayChart(doctor, patient)
     else:
         print("error")
         errorLabel.config(text="Invalid Input",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
