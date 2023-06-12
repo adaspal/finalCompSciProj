@@ -551,6 +551,10 @@ def neuralNetworks(list):
     return prediction
 
 def changePatientPage(usr):
+    '''
+    Passes dorctor as paramameter
+    Displays list of patients that doctors can select from to edit
+    '''
     # clears previous page and creates page
     clearPage()
     framechangePatient = Frame(frameMain)
@@ -576,26 +580,46 @@ def changePatientPage(usr):
         patientSel.set("Patient: ")
         selectLabel = Label(framechangePatient)
         selectLabel.pack()
-        # once selected, display current information
-        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayLabel(selectLabel,usr, patientSel.get(), framechangePatient, patientMenu))
+        patientMenu = OptionMenu(framechangePatient, patientSel,*patientNameList, command= lambda x: displayChart(selectLabel,usr, patientSel.get(), framechangePatient, patientMenu))
         patientMenu.pack()
+        # back button to go back home
         createBackButton = Button(frameMain, text="← Back", command=lambda: homePage(usr))
         createBackButton.pack(pady=30)
 
 
 def infoListGen(doctor, patient):
+    '''
+    Generates a list of one patients infomation
+    Passes doctor and desired patient
+    Returns patients data
+    '''
+    # creates a list of all patients datas from that doctor
     for item in collectPatients(doctor):
+        # traverse through list to identify desired patient data
         if item[0] == patient:
+            # save only that data to a new list
             infoList = item
     return infoList
     
 
-def displayLabel(selectLabel, doctor, patient, frame, menu):
+def displayChart(selectLabel, doctor, patient, frame, menu):
+    '''
+    Erases all uneeded widgets to only display chart of patient information that user can select from. 
+    Passes label to display tree title
+    Doctor and patient to display patient information
+    Frame for desired frame
+    Menu to delete either a) option menu so user cannot switch between patients unless cureent patient changes have been saved
+                          b) previous chart of patient data
+    '''
+    # erases menu or previous chart
     menu.pack_forget()
+
+    # configures title for chart
     selectLabel.config(text="Select a factor to edit below:")
 
-
+    # creates list of factors that will be displayed
     factors = ['Name', 'Age', 'Sex', 'CP', 'TrestBPS', 'Chol', 'FBS', 'RestECG', 'Thalach', 'Exang', 'OldPeak', 'Slope', 'CA', 'Thal', 'Diagnoses']
+    # generates list of desired patient data to be displayed
     infoList = infoListGen(doctor,patient)
     tree = ttk.Treeview(frame)
         # Define the columns for the table
@@ -611,6 +635,7 @@ def displayLabel(selectLabel, doctor, patient, frame, menu):
         tree.heading(column, text=column)
         tree.column(column, width=column_width)
     for i in range (15):
+        # creates new lists of each factor and their corresponding patient data and adds to chart
         newList = [factors[i], infoList[i]]
         # Insert data into the Treeview
         tree.insert('', 'end', text=i, values=newList)
@@ -618,27 +643,35 @@ def displayLabel(selectLabel, doctor, patient, frame, menu):
         # Pack and display the Treeview
     tree.configure(height=10)  # Adjust the height value as desired
     tree.pack()
+    # Allows user to go back and select another patient to change
     doneButton = Button(frame, text='Select New Patient', command=lambda: changePatientPage(doctor) )
     doneButton.pack()
+    # creates error label to display different error messages
     errorLabel = Label(frame)
     errorLabel.pack()
+    # Allows user to change specific factor
     changeButton = Button(frame,text="Change", command=lambda: changeInfo(selectLabel, doctor, patient, frame, tree, changeButton, doneButton, errorLabel))
     changeButton.pack()
 
 
-def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButton, label):
-    selectLabel.pack_forget()
+def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButton, errorlabel):
+    '''
+    Based on selection, function will display appropriate widgets to change a specific factor
+    '''
     selected = tree.focus()
     if selected == '':
-        label.config(text="You have not selected anything",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
+        errorlabel.config(text="You have not selected anything",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
     else:
         temp = tree.item(selected, 'values')
         factor = temp[0]
         infoList = infoListGen(doctor,patient)
         if factor == "Name" or factor == "Diagnoses":
-            label.config(text="Factor cannot be edited.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
+            errorlabel.config(text="Factor cannot be edited.",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
         else: 
-            label.pack_forget()
+            selectLabel.pack_forget()
+            errorlabel.pack_forget()
+            errorLabel = Label()
+            errorLabel.pack()
             changebutton.pack_forget()
             if factor == "Age":
                 index = 1
@@ -783,7 +816,7 @@ def changeInfo(selectLabel,doctor, patient, frame, tree, changebutton, doneButto
                 newFactorVal = thalSel
                 widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree, doneButton]
 
-            saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton, tree))
+            saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, frame, newFactorVal.get(), index, infoList, widgets, saveButton, tree, errorLabel))
             saveButton.pack()
 
 def hideMe(widgets,button):
@@ -791,20 +824,19 @@ def hideMe(widgets,button):
         item.pack_forget()
     button.pack_forget()
 
-def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton, tree):
+def saveInfo(doctor, patient, frame, factor, index, list, widgets, saveButton, tree, errorLabel):
     list[index] = factor
     selectLabel = Label(frame)
     selectLabel.pack()
-    errorLabel = Label(frame)
-    errorLabel.pack()
     newList= [doctor]
     for item in list:
         newList.append(item)
     if validatePatientData(newList[:15]) == True:
+        errorLabel.pack_forget()
         hideMe(widgets, saveButton)
         newList[15] = (neuralNetworks(newList))
         changePatient(newList)
-        displayLabel(selectLabel, doctor, patient, frame, tree)
+        displayChart(selectLabel, doctor, patient, frame, tree)
     else:
         print("error")
         errorLabel.config(text="Invalid Input",font=("Helvetica", 16), fg="red", bg="#FFE2E1" )
