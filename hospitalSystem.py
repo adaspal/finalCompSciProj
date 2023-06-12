@@ -258,7 +258,7 @@ def addPatientPage(usr):
     entryPatient = Entry(frameaddPatientPage)
     entryPatient.pack()
 
-    ageLabel = Label(frameaddPatientPage, text="Age:")
+    ageLabel = Label(frameaddPatientPage, text="Age(0-130):")
     ageLabel.pack()
     ageSP = Spinbox(frameaddPatientPage, from_=0, to=100)
     ageSP.pack()
@@ -280,7 +280,7 @@ def addPatientPage(usr):
     cptOptionThree = Radiobutton(frameaddPatientPage, text="3-Asymptomatic", variable=cptSel, value= 3)
     cptOptionThree.pack()
     
-    bpsLabel = Label(frameaddPatientPage, text="Resting Blood Pressure:")
+    bpsLabel = Label(frameaddPatientPage, text="Resting Blood Pressure(40-200):")
     bpsLabel.pack()
     bpsSP = Spinbox(frameaddPatientPage, from_=0, to=100)
     bpsSP.pack()
@@ -304,9 +304,9 @@ def addPatientPageTwo(label, doctor, patient, age, sex, cpt, rbp):
         frameaddPatientPageTwo = Frame(frameMain)
         frameaddPatientPageTwo.pack(fill="both", expand=True)
         
-        cholLabel = Label(frameaddPatientPageTwo, text="Cholesterol Level:")
+        cholLabel = Label(frameaddPatientPageTwo, text="Cholesterol Level(0-300):")
         cholLabel.pack()
-        cholSP = Spinbox(frameaddPatientPageTwo, from_=0, to=250)
+        cholSP = Spinbox(frameaddPatientPageTwo, from_=0, to=300)
         cholSP.pack()
 
         fbpsSel = StringVar(frameaddPatientPageTwo)
@@ -327,7 +327,7 @@ def addPatientPageTwo(label, doctor, patient, age, sex, cpt, rbp):
         restecgOptionTwo = Radiobutton(frameaddPatientPageTwo, text="2", variable=restecgSel, value= 2)
         restecgOptionTwo.pack()
         
-        thalLabel = Label(frameaddPatientPageTwo, text="Max. Heart Rate Achieved:")
+        thalLabel = Label(frameaddPatientPageTwo, text="Max. Heart Rate Achieved(40-250):")
         thalLabel.pack()
         thalSP = Spinbox(frameaddPatientPageTwo, from_=40, to=250)
         thalSP.pack()
@@ -360,7 +360,7 @@ def addPatientPageThree(label, patientHealthList, chol,fbs,restecg,thalach,exang
         frameaddPatientPageThree = Frame(frameMain)
         frameaddPatientPageThree.pack(fill="both", expand=True)
 
-        oldpeakPatient = Label(frameaddPatientPageThree, text="St depression induced by excercise relative to rest:")
+        oldpeakPatient = Label(frameaddPatientPageThree, text="St depression induced by excercise relative to rest(0-7):")
         oldpeakPatient.pack()
         oldpeakSP = Spinbox(frameaddPatientPageThree, from_=0, to=6,increment= 0.1)
         oldpeakSP.pack()
@@ -662,12 +662,11 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
             changebutton.pack_forget()
             if factor == "Age":
                 index = 1
-                ageLabel = Label(frame, text="Age:")
+                ageLabel = Label(frame, text="Age(0-130):")
                 ageLabel.pack()
                 ageSP = Spinbox(frame, from_=0, to=100,)
                 ageSP.pack()
                 newFactorVal = ageSP
-                widgets = [ageSP, ageLabel]
             elif factor == "Sex":
                 index = 2
                 sexSel = IntVar(frame)
@@ -678,7 +677,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
                 sexOptionOne.pack()
                 newFactorVal = sexSel
-                widgets = [sexLabel,sexOptionOne,sexOptionZero]
             elif factor == "CP":
                 index = 3
                 cptSel = IntVar(frame)
@@ -693,23 +691,20 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 cptOptionThree = Radiobutton(frame, text="3", variable=cptSel, value= 3)
                 cptOptionThree.pack()
                 newFactorVal = cptSel
-                widgets = [cptLabel, cptOptionZero, cptOptionOne,cptOptionTwo, cptOptionThree]
             elif factor == "TrestBPS":
                 index = 4
-                bpsLabel = Label(frame, text="Resting Blood Pressure:")
+                bpsLabel = Label(frame, text="Resting Blood Pressure(40-200):")
                 bpsLabel.pack()
                 bpsSP = Spinbox(frame, from_=0, to=100)
                 bpsSP.pack()
                 newFactorVal = bpsSP
-                widgets = [bpsLabel, bpsSP]
             elif factor == "Chol":
                 index = 5
-                cholLabel = Label(frame, text="Cholesterol Level:")
+                cholLabel = Label(frame, text="Cholesterol Level(0-300):")
                 cholLabel.pack()
                 cholSP = Spinbox(frame, from_=0, to=250)
                 cholSP.pack()
                 newFactorVal = cholSP
-                widgets = [cholLabel, cholSP]
             elif factor == "FBS":
                 index = 6
                 fbpsSel = StringVar(frame)
@@ -720,7 +715,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 fbsOptionOne = Radiobutton(frame, text="1", variable=fbpsSel, value= 1)
                 fbsOptionOne.pack()
                 newFactorVal = fbpsSel
-                widgets = [fbpsPatient,fbsOptionOne,fbsOptionZero]
             elif factor == "RestECG":
                 index = 7
                 restecgSel = StringVar(frame)
@@ -733,15 +727,13 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 restecgOptionTwo = Radiobutton(frame, text="2", variable=restecgSel, value= 2)
                 restecgOptionTwo.pack()
                 newFactorVal = restecgSel
-                widgets = [restecgPatient, restecgOptionZero,restecgOptionOne,restecgOptionTwo]
             elif factor == "Thalach":
                 index = 8
-                thalachLabel = Label(frame, text="Max. Heart Rate Achieved:")
+                thalachLabel = Label(frame, text="Max. Heart Rate Achieved(40-250):")
                 thalachLabel.pack()
                 thalachSP = Spinbox(frame, from_=40, to=250)
                 thalachSP.pack()  
-                newFactorVal = thalachSP
-                widgets = [thalachLabel, thalachSP]     
+                newFactorVal = thalachSP  
             elif factor == 'Exang':
                 index = 9
                 exangSel = StringVar(frame)
@@ -752,15 +744,13 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 exangOptionZero = Radiobutton(frame, text="No", variable=exangSel, value= 0)
                 exangOptionZero.pack()
                 newFactorVal = exangSel
-                widgets = [exangLabel, exangOptionOne,exangOptionZero]
             elif factor == 'OldPeak':
                 index = 10
-                oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest:")
+                oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest(0-7):")
                 oldpeakPatient.pack()
                 oldpeakSP = Spinbox(frame, from_=0, to=6,increment= 0.1)
                 oldpeakSP.pack()
                 newFactorVal = oldpeakSP
-                widgets = [oldpeakPatient,oldpeakSP]
             elif factor == 'Slope':
                 index = 11
                 slopeSel = StringVar(frame)
@@ -773,7 +763,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 slopeOptionTwo = Radiobutton(frame, text="2", variable=slopeSel, value= 2)
                 slopeOptionTwo.pack()
                 newFactorVal = slopeSel
-                widgets = [slopePatient,slopeOptionZero,slopeOptionOne,slopeOptionTwo]
             elif factor == 'CA':
                 index = 12
                 caSel = StringVar(frame)
@@ -788,7 +777,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 caOptionThree = Radiobutton(frame, text="3", variable=caSel, value= 3)
                 caOptionThree.pack(side='left')
                 newFactorVal = caSel
-                widgets = [caPatient, caOptionOne, caOptionTwo, caOptionZero, caOptionThree]
             elif factor == "Thal":
                 index = 13
                 thalSel = StringVar(frame)
@@ -801,7 +789,6 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 thalOptionThree = Radiobutton(frame, text="reversable defect", variable=thalSel, value= 3)
                 thalOptionThree.pack()
                 newFactorVal = thalSel
-                widgets = [thalPatient,thalOptionOne, thalOptionTwo, thalOptionThree]
             errorLabel = Label(frame)
             errorLabel.pack()
             saveButton = Button(frame,text="Save", command=lambda: saveInfo(doctor, patient, newFactorVal.get(), index, infoList, errorLabel))
