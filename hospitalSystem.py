@@ -289,7 +289,7 @@ def addPatientPage(usr):
     nextButton = Button(frameaddPatientPage, text="Next", fg='#127ca1', command=lambda: addPatientPageTwo(addPatientErrorLabel, usr, entryPatient.get(),ageSP.get(), sexSel.get(), cptSel.get(), bpsSP.get() ))
     nextButton.pack()
 
-    createBackButton = Button(frameaddPatientPage, text="Back", command=lambda: homePage(usr))
+    createBackButton = Button(frameaddPatientPage, text="← Back", command=lambda: homePage(usr))
     createBackButton.pack()
 
 
@@ -344,7 +344,7 @@ def addPatientPageTwo(label, doctor, patient, age, sex, cpt, rbp):
         nextButton = Button(frameaddPatientPageTwo, text="Next", fg='#127ca1', command=lambda: addPatientPageThree(addPatientErrorLabel, patientHealthList,cholSP.get(), fbpsSel.get(), restecgSel.get(), thalSP.get(), exangSel.get() ))
         nextButton.pack()
 
-        createBackButton = Button(frameaddPatientPageTwo, text="Back", command=lambda: addPatientPage(doctor))
+        createBackButton = Button(frameaddPatientPageTwo, text="← Back", command=lambda: addPatientPage(doctor))
         createBackButton.pack()
     else:
         print("error")
@@ -402,7 +402,7 @@ def addPatientPageThree(label, patientHealthList, chol,fbs,restecg,thalach,exang
         saveButton = Button(frameaddPatientPageThree, text="Save", fg='#127ca1', command=lambda: diagnosePatient(addPatientErrorLabel,patientHealthList,oldpeakSP.get(), slopeSel.get(), caSel.get(), thalSel.get() ))
         saveButton.pack()
 
-        createBackButton = Button(frameaddPatientPageThree, text="Back", command=lambda: addPatientPageTwo(label, patientHealthList[0],  patientHealthList[1], patientHealthList[2], patientHealthList[3],  patientHealthList[4],  patientHealthList[5]))
+        createBackButton = Button(frameaddPatientPageThree, text="← Back", command=lambda: addPatientPageTwo(label, patientHealthList[0],  patientHealthList[1], patientHealthList[2], patientHealthList[3],  patientHealthList[4],  patientHealthList[5]))
         createBackButton.pack()
     else:
         patientHealthList.pop()
@@ -473,13 +473,14 @@ def diagnosePatient(label,patientHealthList, oldpeak, slope, ca, thal):
         clearPage()
         framepatientDiagnosed = Frame(frameMain)
         framepatientDiagnosed.pack(fill="both", expand=True)        
-        successLabel = Label(framepatientDiagnosed, text='Patient added sucessfully.')
-        successLabel.pack()
+        successLabel = Label(framepatientDiagnosed)
+        successLabel.config(text="✓ -Patient added successfully!", font=("Helvetica", 16), fg="green", bg="#C7F6B6")
+        successLabel.pack(pady=10)
         viewButton = Button(framepatientDiagnosed, text="View All Patients", fg='#127ca1', command=lambda: viewPatientPage(patientHealthList[0]))
-        viewButton.pack(pady=20)
+        viewButton.pack(pady=5)
         addButton = Button(framepatientDiagnosed, text="Add Another Patient", fg='#127ca1', command=lambda: addPatientPage(patientHealthList[0]))
-        addButton.pack(pady=20)        
-        createBackButton = Button(framepatientDiagnosed, text="Back", command=lambda: homePage(patientHealthList[0]))
+        addButton.pack(pady=5)        
+        createBackButton = Button(framepatientDiagnosed, text="← Back", command=lambda: homePage(patientHealthList[0]))
         createBackButton.pack()       
     else:
         patientHealthList.pop()
@@ -640,7 +641,7 @@ def displayChart(doctor, patient):
     # Allows user to change specific factor
     changeButton = Button(framedisplayChart,text="Change", command=lambda: changeInfo(doctor, patient, framedisplayChart, tree, changeButton, errorLabel))
     changeButton.pack()
-    doneButton = Button(framedisplayChart, text='Select New Patient', command=lambda: changePatientPage(doctor) )
+    doneButton = Button(framedisplayChart, text='Done', command=lambda: changePatientPage(doctor) )
     doneButton.pack()
 
 
