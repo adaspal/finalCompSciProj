@@ -11,7 +11,7 @@ from PIL import ImageTk, Image
 import os
 import gzip
 import numpy as np
-import matplotlib.pyplot as plt     #For graphing
+import matplotlib.pyplot as plt #For graphing
 from pylab import cm
 import warnings
 
@@ -34,23 +34,22 @@ from sklearn.metrics import accuracy_score
 from sklearn.neural_network import MLPClassifier
 
 def clearPage():
+    '''
+    Function clears all the widgets displayed in the main frame
+    '''
     for widget in frameMain.winfo_children():
         widget.destroy()
 
 def loginPage():
-    '''Creates log in page'''
-    for widget in frameMain.winfo_children():
-        widget.destroy()
+    '''
+    Creates login page that is called as the first function in the code.
+    Prompts the user for their username and password, which are passed on for validation 
+    The page displays a button option to create an account
+    '''
+    clearPage()
     frameLogin = Frame(frameMain)
     frameLogin.pack()
 
-    # imageBg = Image.open("DocHospital-Bg.png")
-    # # Create a PhotoImage object
-    # photoBg = ImageTk.PhotoImage(imageBg)
-    # labelBg = Label(frameLogin, image=photoBg)
-    # labelBg.image = photoBg  # Keep a reference to the photo object
-    # labelBg.pack()
-    
     imageLogo = Image.open("DocCare-Logo.png")
     imageLogo = imageLogo.resize((300, 150)) # resizes (width, height)
     # Create a PhotoImage object
@@ -80,10 +79,12 @@ def loginPage():
     createAccountButton = Button(frameLogin, text="Don't Have an Account? Click Here", fg='#127ca1', command=createAccountPage) #background is a turquoise hexcode
     createAccountButton.pack()
 
-    # errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red")  # Create the error label to config under validation so that it only appears once
 
 def createAccountPage():
-    ''' Creates create account page'''
+    ''' 
+    Creates a page that takes in a unique username and password to make a new account 
+    Calls the addNewAccount function, which will validate the account and add it to the database
+    '''
     clearPage()
     frameCreateAccount = Frame(frameMain)
     frameCreateAccount.pack(fill="both", expand=True)
@@ -117,15 +118,20 @@ def createAccountPage():
     createBackButton.pack()
 
 def homePage(usr):
-    ''' Creates home page''' 
+    ''' 
+    Creates a homepage which welcomes the user by using the usr parameter and displays all of the menu options
+    ''' 
+
     clearPage()
     # Create home page
     frameHome = Frame(frameMain)
     frameHome.pack(fill="both", expand=True)
 
+    #Main header which welcomes user
     homeLabel = Label(frameHome, text=f"Welcome, " + usr, font=('Helvetica', 36, "bold"))
     homeLabel.pack(pady=10)
 
+    #Menu options as buttons
     viewButton = Button(frameHome, text="View Patient", fg='#127ca1', command=lambda: viewPatientPage(usr))
     viewButton.pack(pady=20)
     addButton = Button(frameHome, text="Add Patient", fg='#127ca1', command=lambda: addPatientPage(usr))
@@ -138,11 +144,20 @@ def homePage(usr):
     signOutButton.pack(pady=20)
     
 def signOut():
+    '''
+    Function runs as a command when sign out button is clicked.
+    Used to bring the user back to the login page.
+    '''
     #creating this function to run the login page makes the program more modular and easy to maintain
     loginPage()
 
 def validateNewAccount(createdUsername, createdPassword):
-    ''' Validates that the account doesnt already exist'''
+    ''' 
+    Validates that the account uses characters and doesn't already exist by checking if the inputted username and password 
+    are stored in the same row in the doctor credentials database
+    Returns True if username and password are unique and contain characters
+    Returns False if username and password and both already used together or no characters are used
+    '''
     #Checks to ensure that characters are used in the username and password
     if createdUsername.strip() == "" or createdPassword.strip() == "":
         return False
@@ -151,7 +166,6 @@ def validateNewAccount(createdUsername, createdPassword):
     with open("doctorCredentials.csv", 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            print(row)
             if row[0] == createdUsername:
                 return False
             
@@ -159,22 +173,33 @@ def validateNewAccount(createdUsername, createdPassword):
     return True
 
 def addNewAccount(createdUsername, createdPassword):
-    '''Creates new account'''
+    '''
+    Creates a new doctor account by storing the inputted username and password in the doctor credentials csv database
+    If the username and password does not pass validation, an error message is displayed
+    '''
+
     if validateNewAccount(createdUsername, createdPassword): #if the function returned true, meaning it passed validation
-        #clearing screen
         newAccountList = [createdUsername, createdPassword]
         with open("doctorCredentials.csv", "a+", newline='') as file:
-            csv_writer = writer(file)
+            csv_writer = writer(file) #adds new user to the doctor database
             csv_writer.writerow(newAccountList)
         usr = createdUsername             
-        homePage(usr)
+        homePage(usr) #
+    #if the account does not meet expectations
     else:
-        errorLabel2 = Label(frameMain, text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
-        errorLabel2.pack(pady=10)
-        print("error")
+        if not hasattr(validateNewAccount, 'errorLabel2'):  # Check if errorLabel attribute exists so it does not create a new frame
+            validateNewAccount.errorLabel2 = Label(frameMain)
+            validateNewAccount.errorLabel2.pack(pady=10)
+        validateNewAccount.errorLabel2.config(text="X -This account is invalid or already exists. Please try again.", font=("Helvetica", 16), fg="red", bg="#FFE2E1")
+        
 
 def validateCredentials(username, password):
-    # Read credentials and validate
+    '''
+    Reads the doctor credentials csv file to determine if a row has the same username and password as the inputs
+    If the username and password inputed match a row, validation passed, account exists and function returns True 
+    If the username and password inputed do not match a row, validation failed, account does not exist and function returns False
+    '''
+    # Reads credentials and validates if username and password already exist in the same row
     with open("doctorCredentials.csv", 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
@@ -183,31 +208,46 @@ def validateCredentials(username, password):
     return False
 
 def login(username, password):
-    '''Using validate credentials will allow you to log in or not'''
+    '''
+    Directs the user to the homepage if their credentials were validated or displays an error message and stays on screen 
+    if username and/or password does not oass validation. 
+    '''
     if validateCredentials(username, password):
         usr = username
-        homePage(usr)
+        homePage(usr) #goes to homepage and take the username as a parameter if validate credentials function returns true
     else:
-        print("Try again")
-        if not hasattr(login, 'errorLabel'):  # Check if errorLabel attribute exists so it does not create a new frame
+        if not hasattr(login, 'errorLabel'):  # Checks if errorLabel attribute exists so it does not create a new frame
             login.errorLabel = Label(frameMain, font=("Helvetica", 16), fg="red", bg="#FFE2E1")
             login.errorLabel.pack(pady=15)
         login.errorLabel.config(text="X -Incorrect username and/or password. Please try again.")
 
 def collectPatients(usr):
+    '''
+    The patient database csv file is read to find every patient under the logged in user, which is appended to a list
+    Returns patients; list of user's patients
+    '''
     patients = []
     with open("patientDatabase.csv", 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
             if row[0] == usr:
+                # appends user information without doctor name
                 patients.append(row[1:])
     return patients
 
 def viewPatientPage(usr):
+    '''
+    Creates a frame with a treeview that displays a horizontal table of the user's (usr) patients. 
+    If the user has no patients to view, the screen prompts them to add a patient. 
+    Returns: None
+    '''
+
+    #clears screen and creates a new frame
     clearPage()
     frameviewPatientPage = Frame(frameMain)
     frameviewPatientPage.pack(fill="both", expand=True)
 
+    # collects all of the user's patients as a list
     patientsList = collectPatients(usr)
 
     if not patientsList:
@@ -745,28 +785,31 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
             # change button is removed so that user cannot select another factor to change in the middle of changing current factor
             changebutton.pack_forget()
             if factor == "Age":
-                # displays appropriate widgets for each factor
+                # displays appropriate widgets for each factor to take user input
                 index = 1 # lets program know at which index of the list the change must be made
                 ageLabel = Label(frame, text="Age(0-130):")
                 ageLabel.pack()
-                ageSP = Spinbox(frame, from_=0, to=100,)
+                ageSP = Spinbox(frame, from_=0, to=100,) #spinbox used to make it easier for users to enter value
                 ageSP.pack()
                 newFactorVal = ageSP # lets program know what the new value will be at the given index
             elif factor == "Sex":
+                # displays appropriate widgets for each factor to take user input
                 index = 2
                 sexSel = IntVar(frame)
                 sexLabel = Label(frame, text="Sex:")
                 sexLabel.pack()
-                sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0)
+                sexOptionZero = Radiobutton(frame, text="Female", variable=sexSel, value= 0) 
                 sexOptionZero.pack()
                 sexOptionOne = Radiobutton(frame, text="Male", variable=sexSel, value= 1)
                 sexOptionOne.pack()
                 newFactorVal = sexSel
             elif factor == "CP":
+                # displays appropriate widgets for each factor to take user input
                 index = 3
                 cptSel = IntVar(frame)
                 cptLabel = Label(frame, text="Chest pain level:")
                 cptLabel.pack()
+                #radiobutton used to ensure valid inputs
                 cptOptionZero = Radiobutton(frame, text="0", variable=cptSel, value= 0)
                 cptOptionZero.pack()
                 cptOptionOne = Radiobutton(frame, text="1", variable=cptSel, value= 1)
@@ -777,6 +820,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 cptOptionThree.pack()
                 newFactorVal = cptSel
             elif factor == "TrestBPS":
+                # displays appropriate widgets for each factor to take user input
                 index = 4
                 bpsLabel = Label(frame, text="Resting Blood Pressure(40-200):")
                 bpsLabel.pack()
@@ -784,6 +828,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 bpsSP.pack()
                 newFactorVal = bpsSP
             elif factor == "Chol":
+                # displays appropriate widgets for each factor to take user input
                 index = 5
                 cholLabel = Label(frame, text="Cholesterol Level(0-300):")
                 cholLabel.pack()
@@ -791,6 +836,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 cholSP.pack()
                 newFactorVal = cholSP
             elif factor == "FBS":
+                # displays appropriate widgets for each factor to take user input
                 index = 6
                 fbpsSel = StringVar(frame)
                 fbpsPatient = Label(frame, text="Fasting Blood Sugar:")
@@ -801,6 +847,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 fbsOptionOne.pack()
                 newFactorVal = fbpsSel
             elif factor == "RestECG":
+                # displays appropriate widgets for each factor to take user input
                 index = 7
                 restecgSel = StringVar(frame)
                 restecgPatient = Label(frame, text="Resting ECG Result:")
@@ -813,6 +860,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 restecgOptionTwo.pack()
                 newFactorVal = restecgSel
             elif factor == "Thalach":
+                # displays appropriate widgets for each factor to take user input
                 index = 8
                 thalachLabel = Label(frame, text="Max. Heart Rate Achieved(40-250):")
                 thalachLabel.pack()
@@ -820,6 +868,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 thalachSP.pack()  
                 newFactorVal = thalachSP  
             elif factor == 'Exang':
+                # displays appropriate widgets for each factor to take user input
                 index = 9
                 exangSel = StringVar(frame)
                 exangLabel = Label(frame, text="excercise induced angia:")
@@ -830,6 +879,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 exangOptionZero.pack()
                 newFactorVal = exangSel
             elif factor == 'OldPeak':
+                # displays appropriate widgets for each factor to take user input
                 index = 10
                 oldpeakPatient = Label(frame, text="St depression induced by excercise relative to rest(0-7):")
                 oldpeakPatient.pack()
@@ -837,6 +887,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 oldpeakSP.pack()
                 newFactorVal = oldpeakSP
             elif factor == 'Slope':
+                # displays appropriate widgets for each factor to take user input
                 index = 11
                 slopeSel = StringVar(frame)
                 slopePatient = Label(frame, text="Slope:")
@@ -849,6 +900,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 slopeOptionTwo.pack()
                 newFactorVal = slopeSel
             elif factor == 'CA':
+                # displays appropriate widgets for each factor to take user input
                 index = 12
                 caSel = StringVar(frame)
                 caPatient = Label(frame, text="Num of vessels coloured by floroscopy:")
@@ -863,6 +915,7 @@ def changeInfo(doctor, patient, frame, tree, changebutton, errorlabel):
                 caOptionThree.pack(side='left')
                 newFactorVal = caSel
             elif factor == "Thal":
+                # displays appropriate widgets for each factor to take user input
                 index = 13
                 thalSel = StringVar(frame)
                 thalPatient = Label(frame, text="thal:")
@@ -1223,7 +1276,7 @@ win.geometry("700x500")
 
 frameMain = Frame(win) #All other created frames are children of this frame, making them contained under frameMain
 frameMain.pack(expand=True, anchor="n") 
-
+# program runs beginning from login page
 loginPage()
 
 win.mainloop()
